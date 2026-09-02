@@ -36,7 +36,7 @@ function TelaEsqueci({
           valor={email}
           aoMudar={aoMudarEmail}
         />
-        <button type="submit" disabled={enviando} className={CLASSE_BOTAO}>
+        <button type="submit" disabled={enviando} className={`${CLASSE_BOTAO} !mt-6`}>
           {enviando ? 'Enviando...' : 'Enviar código'}
         </button>
       </form>

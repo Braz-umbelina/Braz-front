@@ -40,7 +40,7 @@ function TelaVerificar({
         <button
           type="submit"
           disabled={enviando || !completo}
-          className={CLASSE_BOTAO}
+          className={`${CLASSE_BOTAO} !mt-7`}
         >
           {enviando ? 'Confirmando...' : 'Confirmar código'}
         </button>

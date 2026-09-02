@@ -48,7 +48,7 @@ function TelaLogin({
           placeholder="••••••••"
         />
 
-        <div className="flex justify-end pb-1">
+        <div className="flex justify-start pb-1">
           <button
             type="button"
             onClick={aoEsquecerSenha}
@@ -58,7 +58,7 @@ function TelaLogin({
           </button>
         </div>
 
-        <button type="submit" disabled={enviando} className={CLASSE_BOTAO}>
+        <button type="submit" disabled={enviando} className={`${CLASSE_BOTAO} !mt-6`}>
           {enviando ? 'Entrando...' : 'Entrar'}
         </button>
       </form>

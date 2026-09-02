@@ -7,15 +7,8 @@ type Props = {
 
 function Cabecalho({ aula, aoSair }: Props) {
   return (
-    <header className="flex items-center justify-between p-4 bg-black sticky top-0 z-10">
-      <div className="flex items-center gap-3">
-        <img
-          src="/cabecalho-braz.png"
-          alt="Braz"
-          className="h-16 w-auto object-contain"
-        />
-      </div>
-      <div className="flex items-center gap-4">
+    <header className="flex items-center p-4 sticky top-0 z-10">
+      <div className="flex items-center gap-4 ml-auto">
         <div className="text-right hidden sm:block">
           <p className="text-[0.65rem] text-gray-400 uppercase tracking-widest">
             {aula?.professor ? `Professora ${aula.professor}` : ''}

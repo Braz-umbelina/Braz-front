@@ -82,7 +82,7 @@ function TelaRegistro({
           />
         </div>
 
-        <button type="submit" disabled={enviando} className={CLASSE_BOTAO}>
+        <button type="submit" disabled={enviando} className={`${CLASSE_BOTAO} !mt-6`}>
           {enviando ? 'Cadastrando...' : 'Cadastrar'}
         </button>
       </form>

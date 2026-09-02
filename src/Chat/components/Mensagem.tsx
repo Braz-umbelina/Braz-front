@@ -25,7 +25,7 @@ function Mensagem({ mensagem }: Props) {
 
   return (
     <div className="flex gap-4 max-w-3xl w-full animate-fade-in">
-      <img src="/icone-braz.png" alt="Braz" className={CLASSE_AVATAR} />
+      <img src="/images/icone-braz.png" alt="Braz" className={CLASSE_AVATAR} />
       <div className="flex-1 text-brand-light leading-relaxed space-y-2 whitespace-pre-wrap">
         <p>{mensagem.texto}</p>
       </div>
@@ -36,7 +36,7 @@ function Mensagem({ mensagem }: Props) {
 export function Digitando() {
   return (
     <div className="flex gap-4 max-w-3xl w-full animate-fade-in">
-      <img src="/icone-braz.png" alt="Braz" className={CLASSE_AVATAR} />
+      <img src="/images/icone-braz.png" alt="Braz" className={CLASSE_AVATAR} />
       <div className="flex-1 text-brand-light/60 leading-relaxed">
         <p>Digitando...</p>
       </div>
