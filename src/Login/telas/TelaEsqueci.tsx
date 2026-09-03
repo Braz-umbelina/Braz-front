@@ -1,20 +1,22 @@
-import type { FormEvent } from 'react'
-import CampoEmail from '../components/CampoEmail'
-import { CLASSE_BOTAO, CLASSE_SUBTITULO, CLASSE_TITULO } from '../estilos'
+import type { FormEvent } from "react";
+import CampoEmail from "../components/CampoEmail";
+import { CLASSE_BOTAO, CLASSE_SUBTITULO, CLASSE_TITULO } from "../estilos";
 
 type Props = {
-  email: string
-  enviando: boolean
-  aoMudarEmail: (valor: string) => void
-  aoEnviar: (e: FormEvent) => void
-  aoVoltar: () => void
-}
+  email: string;
+  enviando: boolean;
+  aoMudarEmail: (valor: string) => void;
+  aoEnviar: (e: FormEvent) => void;
+  esperaReenvio: number;
+  aoVoltar: () => void;
+};
 
 function TelaEsqueci({
   email,
   enviando,
   aoMudarEmail,
   aoEnviar,
+  esperaReenvio,
   aoVoltar,
 }: Props) {
   return (
@@ -36,12 +38,20 @@ function TelaEsqueci({
           valor={email}
           aoMudar={aoMudarEmail}
         />
-        <button type="submit" disabled={enviando} className={`${CLASSE_BOTAO} !mt-6`}>
-          {enviando ? 'Enviando...' : 'Enviar código'}
+        <button
+          type="submit"
+          disabled={enviando || esperaReenvio > 0}
+          className={`${CLASSE_BOTAO} !mt-6`}
+        >
+          {esperaReenvio > 0
+            ? `Aguarde ${esperaReenvio}s`
+            : enviando
+              ? "Enviando..."
+              : "Enviar código"}
         </button>
       </form>
     </div>
-  )
+  );
 }
 
-export default TelaEsqueci
+export default TelaEsqueci;

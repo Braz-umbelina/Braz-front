@@ -1,52 +1,60 @@
-const API_URL = import.meta.env.VITE_API_URL
+const API_URL = import.meta.env.VITE_API_URL;
 
 //-------------- errors
 
 /* The status travels with the message because the chat needs to tell an expired
 token (401) apart from any other failure, and only the status says that. */
 export class ErroDeApi extends Error {
-  public status: number
+  public status: number;
+  public aguardeSegundos?: number;
 
-  constructor(mensagem: string, status: number) {
-    super(mensagem)
-    this.status = status
+  constructor(mensagem: string, status: number, aguardeSegundos?: number) {
+    super(mensagem);
+    this.status = status;
+    this.aguardeSegundos = aguardeSegundos;
   }
 }
 
 //-------------- client
 
 type Opcoes = {
-  metodo?: 'GET' | 'POST'
-  corpo?: unknown
-  token?: string
-}
+  metodo?: "GET" | "POST";
+  corpo?: unknown;
+  token?: string;
+};
 
 export const requisitar = async <T>(
   caminho: string,
   opcoes: Opcoes = {},
 ): Promise<T> => {
-  const { metodo = 'GET', corpo, token } = opcoes
+  const { metodo = "GET", corpo, token } = opcoes;
 
   const response = await fetch(`${API_URL}${caminho}`, {
     method: metodo,
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: corpo ? JSON.stringify(corpo) : undefined,
-  })
+  });
 
-  const dados = await response.json()
+  const dados = await response.json();
 
   /* Every route on the backend answers with { error } when something goes wrong,
   so the message shown to the student always comes from there. */
   if (!response.ok) {
     const mensagem =
-      typeof dados?.error === 'string'
+      typeof dados?.error === "string"
         ? dados.error
-        : 'Não foi possível concluir a solicitação'
-    throw new ErroDeApi(mensagem, response.status)
+        : "Não foi possível concluir a solicitação";
+
+    /* On a 429 the backend says on this header how many seconds are left, which is what
+    the resend button uses to count down instead of just refusing the click. */
+    const reset = response.headers.get("RateLimit-Reset");
+    const espera = reset ? Number(reset) : undefined;
+
+    throw new ErroDeApi(mensagem, response.status, espera);
   }
 
-  return dados as T
-}
+  return dados as T;
+};

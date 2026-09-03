@@ -1,21 +1,22 @@
-import type { FormEvent } from 'react'
-import CampoCodigo from '../components/CampoCodigo'
+import type { FormEvent } from "react";
+import CampoCodigo from "../components/CampoCodigo";
 import {
   CLASSE_BOTAO,
   CLASSE_LINK,
   CLASSE_SUBTITULO,
   CLASSE_TITULO,
-} from '../estilos'
+} from "../estilos";
 
 type Props = {
-  email: string
-  digitos: string[]
-  enviando: boolean
-  aoMudarDigitos: (digitos: string[]) => void
-  aoEnviar: (e: FormEvent) => void
-  aoReenviar: () => void
-  aoVoltar: () => void
-}
+  email: string;
+  digitos: string[];
+  enviando: boolean;
+  aoMudarDigitos: (digitos: string[]) => void;
+  aoEnviar: (e: FormEvent) => void;
+  aoReenviar: () => void;
+  esperaReenvio: number;
+  aoVoltar: () => void;
+};
 
 function TelaVerificar({
   email,
@@ -24,15 +25,16 @@ function TelaVerificar({
   aoMudarDigitos,
   aoEnviar,
   aoReenviar,
+  esperaReenvio,
   aoVoltar,
 }: Props) {
-  const completo = digitos.join('').length === 6
+  const completo = digitos.join("").length === 6;
 
   return (
     <div className="animate-fade-in">
       <h2 className={CLASSE_TITULO}>Verifique o seu e-mail</h2>
       <p className={CLASSE_SUBTITULO}>
-        Enviamos um código de 6 dígitos para {email || 'o seu e-mail'}.
+        Enviamos um código de 6 dígitos para {email || "o seu e-mail"}.
       </p>
 
       <form className="space-y-5" onSubmit={aoEnviar}>
@@ -42,15 +44,25 @@ function TelaVerificar({
           disabled={enviando || !completo}
           className={`${CLASSE_BOTAO} !mt-7`}
         >
-          {enviando ? 'Confirmando...' : 'Confirmar código'}
+          {enviando ? "Confirmando..." : "Confirmar código"}
         </button>
       </form>
 
       <p className="text-sm text-gray-400 mt-6">
-        Não recebeu?{' '}
-        <button onClick={aoReenviar} disabled={enviando} className={CLASSE_LINK}>
-          Reenviar
-        </button>
+        Não recebeu?{" "}
+        {esperaReenvio > 0 ? (
+          <span className="text-gray-500 font-bold">
+            Reenviar em {esperaReenvio}s
+          </span>
+        ) : (
+          <button
+            onClick={aoReenviar}
+            disabled={enviando}
+            className={CLASSE_LINK}
+          >
+            Reenviar
+          </button>
+        )}
         <br />
         <button
           onClick={aoVoltar}
@@ -60,7 +72,7 @@ function TelaVerificar({
         </button>
       </p>
     </div>
-  )
+  );
 }
 
-export default TelaVerificar
+export default TelaVerificar;

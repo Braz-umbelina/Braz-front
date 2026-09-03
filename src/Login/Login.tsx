@@ -1,133 +1,153 @@
-import { useState, type FormEvent } from 'react'
-import Alerta from './components/Alerta'
-import TelaEsqueci from './telas/TelaEsqueci'
-import TelaLogin from './telas/TelaLogin'
-import TelaRedefinir from './telas/TelaRedefinir'
-import TelaRegistro from './telas/TelaRegistro'
-import TelaVerificar from './telas/TelaVerificar'
-import * as alunoService from './services/alunoService'
+import { useEffect, useState, type FormEvent } from "react";
+import { ErroDeApi } from "../api/client";
+import Alerta from "./components/Alerta";
+import TelaEsqueci from "./telas/TelaEsqueci";
+import TelaLogin from "./telas/TelaLogin";
+import TelaRedefinir from "./telas/TelaRedefinir";
+import TelaRegistro from "./telas/TelaRegistro";
+import TelaVerificar from "./telas/TelaVerificar";
+import * as alunoService from "./services/alunoService";
 
-type Tela = 'login' | 'registro' | 'verificar' | 'esqueci' | 'redefinir'
+type Tela = "login" | "registro" | "verificar" | "esqueci" | "redefinir";
 
 type Props = {
-  aoAutenticar: (token: string) => void
-}
+  aoAutenticar: (token: string) => void;
+};
 
-const DIGITOS_VAZIOS = Array<string>(6).fill('')
+const DIGITOS_VAZIOS = Array<string>(6).fill("");
 
 /* Verification belongs to the sign up flow and reset belongs to the password one, so
 they reuse the mascot of the screen that led the student there. */
 const MASCOTES: Record<Tela, { imagem: string; fala: string }> = {
   login: {
-    imagem: '/images/mascote-login.webp',
-    fala: 'Que bom ter você de volta! Vamos começar a nossa aula?',
+    imagem: "/images/mascote-login.webp",
+    fala: "Que bom ter você de volta! Vamos começar a nossa aula?",
   },
   registro: {
-    imagem: '/images/mascote-registro.webp',
-    fala: 'Oi! Eu sou o Braz. Vamos dar o primeiro passo da nossa jornada?',
+    imagem: "/images/mascote-registro.webp",
+    fala: "Oi! Eu sou o Braz. Vamos dar o primeiro passo da nossa jornada?",
   },
   verificar: {
-    imagem: '/images/mascote-registro.webp',
-    fala: 'Falta pouco! Confirme o código que enviei.',
+    imagem: "/images/mascote-registro.webp",
+    fala: "Falta pouco! Confirme o código que enviei.",
   },
   esqueci: {
-    imagem: '/images/mascote-redefinir-senha.webp',
-    fala: 'Sem problemas! Vamos recuperar sua senha.',
+    imagem: "/images/mascote-redefinir-senha.webp",
+    fala: "Sem problemas! Vamos recuperar sua senha.",
   },
   redefinir: {
-    imagem: '/images/mascote-redefinir-senha.webp',
-    fala: 'Escolha uma senha nova e voltamos ao estudo.',
+    imagem: "/images/mascote-redefinir-senha.webp",
+    fala: "Escolha uma senha nova e voltamos ao estudo.",
   },
-}
+};
 
 //-------------- component
 
 function Login({ aoAutenticar }: Props) {
-  const [tela, setTela] = useState<Tela>('login')
-  const [email, setEmail] = useState('')
-  const [senha, setSenha] = useState('')
-  const [nome, setNome] = useState('')
-  const [codigoTurma, setCodigoTurma] = useState('')
-  const [digitos, setDigitos] = useState(DIGITOS_VAZIOS)
-  const [enviando, setEnviando] = useState(false)
-  const [erro, setErro] = useState<string | null>(null)
-  const [aviso, setAviso] = useState<string | null>(null)
+  const [tela, setTela] = useState<Tela>("login");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [nome, setNome] = useState("");
+  const [codigoTurma, setCodigoTurma] = useState("");
+  const [digitos, setDigitos] = useState(DIGITOS_VAZIOS);
+  const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+  const [aviso, setAviso] = useState<string | null>(null);
+  const [esperaReenvio, setEsperaReenvio] = useState(0);
 
-  const codigo = digitos.join('')
-  const mascote = MASCOTES[tela]
+  const codigo = digitos.join("");
+  const mascote = MASCOTES[tela];
+
+  /* Counts down the seconds the backend asked us to wait, so the student sees the button
+  come back to life instead of clicking it and getting the same error again. */
+  useEffect(() => {
+    if (esperaReenvio <= 0) return;
+    const id = setTimeout(() => setEsperaReenvio((atual) => atual - 1), 1000);
+    return () => clearTimeout(id);
+  }, [esperaReenvio]);
 
   const trocarTela = (destino: Tela) => {
-    setTela(destino)
-    setErro(null)
-    setAviso(null)
-    setDigitos(DIGITOS_VAZIOS)
-  }
+    setTela(destino);
+    setErro(null);
+    setAviso(null);
+    setDigitos(DIGITOS_VAZIOS);
+  };
 
   /* Wraps every submit so the loading state and the error message are handled in one
   place, instead of repeating try/catch on each screen. */
   const enviar = async (acao: () => Promise<void>) => {
-    setErro(null)
-    setAviso(null)
-    setEnviando(true)
+    setErro(null);
+    setAviso(null);
+    setEnviando(true);
     try {
-      await acao()
+      await acao();
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro inesperado')
+      if (error instanceof ErroDeApi && error.aguardeSegundos) {
+        setEsperaReenvio(error.aguardeSegundos);
+      }
+      setErro(error instanceof Error ? error.message : "Erro inesperado");
     } finally {
-      setEnviando(false)
+      setEnviando(false);
     }
-  }
+  };
 
   const entrar = (e: FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     void enviar(async () => {
-      const dados = await alunoService.login(email, senha)
-      aoAutenticar(dados.token)
-    })
-  }
+      const dados = await alunoService.login(email, senha);
+      aoAutenticar(dados.token);
+    });
+  };
 
   const cadastrar = (e: FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     void enviar(async () => {
-      const dados = await alunoService.registro(nome, email, senha, codigoTurma)
-      trocarTela('verificar')
-      setAviso(dados.message)
-    })
-  }
+      const dados = await alunoService.registro(
+        nome,
+        email,
+        senha,
+        codigoTurma,
+      );
+      trocarTela("verificar");
+      setAviso(dados.message);
+    });
+  };
 
   const confirmarCodigo = (e: FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     void enviar(async () => {
-      const dados = await alunoService.verificarCodigo(email, codigo)
-      aoAutenticar(dados.token)
-    })
-  }
+      const dados = await alunoService.verificarCodigo(email, codigo);
+      aoAutenticar(dados.token);
+    });
+  };
 
   const reenviar = () => {
     void enviar(async () => {
-      const dados = await alunoService.reenviarCodigo(email)
-      setAviso(dados.message)
-    })
-  }
+      const dados = await alunoService.reenviarCodigo(email);
+      setAviso(dados.message);
+      setEsperaReenvio(60);
+    });
+  };
 
   const pedirCodigoDeSenha = (e: FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     void enviar(async () => {
-      const dados = await alunoService.pedirCodigoDeSenha(email)
-      trocarTela('redefinir')
-      setAviso(dados.message)
-    })
-  }
+      const dados = await alunoService.pedirCodigoDeSenha(email);
+      trocarTela("redefinir");
+      setAviso(dados.message);
+      setEsperaReenvio(60);
+    });
+  };
 
   const redefinirSenha = (e: FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     void enviar(async () => {
-      await alunoService.trocarSenha(email, codigo, senha)
-      setSenha('')
-      trocarTela('login')
-      setAviso('Senha alterada. Entre com a nova senha.')
-    })
-  }
+      await alunoService.trocarSenha(email, codigo, senha);
+      setSenha("");
+      trocarTela("login");
+      setAviso("Senha alterada. Entre com a nova senha.");
+    });
+  };
 
   return (
     <div className="bg-black text-brand-light font-sans min-h-screen relative overflow-hidden selection:bg-brand-teal selection:text-white">
@@ -147,7 +167,7 @@ function Login({ aoAutenticar }: Props) {
       was starting way below the others. */}
       <main className="relative grid lg:grid-cols-2 items-start gap-10 max-w-6xl px-6 pb-10 pt-8 mx-auto lg:ml-[6%] lg:mr-auto">
         <div className="w-full max-w-sm mx-auto lg:mx-0">
-          {tela === 'login' && (
+          {tela === "login" && (
             <TelaLogin
               email={email}
               senha={senha}
@@ -155,12 +175,12 @@ function Login({ aoAutenticar }: Props) {
               aoMudarEmail={setEmail}
               aoMudarSenha={setSenha}
               aoEnviar={entrar}
-              aoEsquecerSenha={() => trocarTela('esqueci')}
-              aoCriarConta={() => trocarTela('registro')}
+              aoEsquecerSenha={() => trocarTela("esqueci")}
+              aoCriarConta={() => trocarTela("registro")}
             />
           )}
 
-          {tela === 'registro' && (
+          {tela === "registro" && (
             <TelaRegistro
               nome={nome}
               email={email}
@@ -172,11 +192,11 @@ function Login({ aoAutenticar }: Props) {
               aoMudarSenha={setSenha}
               aoMudarCodigoTurma={setCodigoTurma}
               aoEnviar={cadastrar}
-              aoFazerLogin={() => trocarTela('login')}
+              aoFazerLogin={() => trocarTela("login")}
             />
           )}
 
-          {tela === 'verificar' && (
+          {tela === "verificar" && (
             <TelaVerificar
               email={email}
               digitos={digitos}
@@ -184,21 +204,23 @@ function Login({ aoAutenticar }: Props) {
               aoMudarDigitos={setDigitos}
               aoEnviar={confirmarCodigo}
               aoReenviar={reenviar}
-              aoVoltar={() => trocarTela('login')}
+              esperaReenvio={esperaReenvio}
+              aoVoltar={() => trocarTela("login")}
             />
           )}
 
-          {tela === 'esqueci' && (
+          {tela === "esqueci" && (
             <TelaEsqueci
               email={email}
               enviando={enviando}
               aoMudarEmail={setEmail}
               aoEnviar={pedirCodigoDeSenha}
-              aoVoltar={() => trocarTela('login')}
+              esperaReenvio={esperaReenvio}
+              aoVoltar={() => trocarTela("login")}
             />
           )}
 
-          {tela === 'redefinir' && (
+          {tela === "redefinir" && (
             <TelaRedefinir
               digitos={digitos}
               senha={senha}
@@ -206,7 +228,7 @@ function Login({ aoAutenticar }: Props) {
               aoMudarDigitos={setDigitos}
               aoMudarSenha={setSenha}
               aoEnviar={redefinirSenha}
-              aoVoltar={() => trocarTela('esqueci')}
+              aoVoltar={() => trocarTela("esqueci")}
             />
           )}
 
@@ -239,7 +261,7 @@ function Login({ aoAutenticar }: Props) {
         </div>
       </main>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;
