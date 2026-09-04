@@ -63,23 +63,28 @@ function TelaRegistro({
         </div>
 
         <CampoEmail rotulo="E-mail" valor={email} aoMudar={aoMudarEmail} />
-        <CampoSenha
-          rotulo="Senha"
-          valor={senha}
-          aoMudar={aoMudarSenha}
-          placeholder="Mínimo 6 caracteres"
-        />
 
-        <div>
-          <label className={CLASSE_LABEL}>Código da turma</label>
-          <input
-            type="text"
-            value={codigoTurma}
-            onChange={(e) => aoMudarCodigoTurma(e.target.value)}
-            className={CLASSE_INPUT}
-            placeholder="Informado pela professora"
-            required
+        {/* Side by side because the card was running past the bottom of the screen with
+        four stacked fields. */}
+        <div className="grid sm:grid-cols-2 gap-3.5">
+          <CampoSenha
+            rotulo="Senha"
+            valor={senha}
+            aoMudar={aoMudarSenha}
+            placeholder="Mínimo 6"
           />
+
+          <div>
+            <label className={CLASSE_LABEL}>Código da turma</label>
+            <input
+              type="text"
+              value={codigoTurma}
+              onChange={(e) => aoMudarCodigoTurma(e.target.value)}
+              className={CLASSE_INPUT}
+              placeholder="••••••"
+              required
+            />
+          </div>
         </div>
 
         <button type="submit" disabled={enviando} className={`${CLASSE_BOTAO} !mt-6`}>

@@ -71,6 +71,9 @@ function Login({ aoAutenticar }: Props) {
     setErro(null);
     setAviso(null);
     setDigitos(DIGITOS_VAZIOS);
+    /* The email carries over between screens because it is the same person typing, but
+    the password never does: what was typed to sign in must not show up on sign up. */
+    setSenha("");
   };
 
   /* Wraps every submit so the loading state and the error message are handled in one
@@ -155,7 +158,7 @@ function Login({ aoAutenticar }: Props) {
       the flat black without competing with the form. */}
       <div className="pointer-events-none absolute -top-[28rem] -left-[28rem] w-[70rem] h-[70rem] rounded-full bg-brand-teal/20 blur-[180px]" />
 
-      <header className="relative px-6 pt-6 lg:pl-16">
+      <header className="relative px-6 pt-3 lg:pl-16">
         <img
           src="/images/logo-principal.webp"
           alt="Braz"
@@ -163,10 +166,30 @@ function Login({ aoAutenticar }: Props) {
         />
       </header>
 
-      {/* Anchored to the top instead of centered: the reset screen is the tallest one and
-      was starting way below the others. */}
-      <main className="relative grid lg:grid-cols-2 items-start gap-10 max-w-6xl px-6 pb-10 pt-8 mx-auto lg:ml-[6%] lg:mr-auto">
-        <div className="w-full max-w-sm mx-auto lg:mx-0">
+      <main className="relative flex justify-center px-6 pb-6 -mt-2">
+        {/* Barely there on purpose: a hint of light and a thin border give the form its
+        own space without turning into a solid box over the background. */}
+        <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm px-8 py-8 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.8)]">
+          {/* Braz greets from the top of the card, in the same shape the student will see
+          in the chat later: his avatar on the left and what he says beside it. */}
+          <div className="flex items-center gap-3 mb-7">
+            <div className="relative w-20 h-20 flex-shrink-0">
+              <div className="absolute inset-0 rounded-full bg-brand-teal" />
+              <img
+                src={mascote.imagem}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-contain p-1"
+              />
+            </div>
+            <div className="relative flex-1 bg-white text-brand-dark rounded-2xl rounded-bl-sm px-4 py-2.5 shadow-[0_8px_20px_rgba(0,0,0,0.35)]">
+              <p className="font-display font-semibold text-xs leading-snug">
+                {mascote.fala}
+              </p>
+              <div className="absolute -left-1 bottom-3 w-3 h-3 bg-white rotate-45 rounded-[2px]" />
+            </div>
+          </div>
+
           {tela === "login" && (
             <TelaLogin
               email={email}
@@ -234,30 +257,6 @@ function Login({ aoAutenticar }: Props) {
 
           {erro && <Alerta texto={erro} tipo="erro" />}
           {aviso && !erro && <Alerta texto={aviso} tipo="aviso" />}
-        </div>
-
-        {/* The mascot is decoration, so it leaves on small screens instead of pushing
-        the form below the fold. Pinned to the top because centering would move it up and
-        down with the height of each form. */}
-        <div className="hidden lg:flex justify-center self-start pt-10">
-          <div className="relative w-[26rem] h-[26rem]">
-            <div className="absolute inset-0 rounded-full bg-brand-teal" />
-            <img
-              src={mascote.imagem}
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 w-full h-full object-contain p-10 drop-shadow-2xl"
-            />
-
-            {/* The tail is a small square rotated 45deg sitting half outside the balloon,
-            so it reads as one piece with the circle instead of a floating box. */}
-            <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-64 bg-white text-brand-dark rounded-xl px-5 py-3 text-center shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
-              <p className="font-display font-semibold text-sm leading-snug">
-                {mascote.fala}
-              </p>
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-5 h-5 bg-white rotate-45 rounded-[3px]" />
-            </div>
-          </div>
         </div>
       </main>
     </div>

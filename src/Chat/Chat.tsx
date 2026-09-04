@@ -1,79 +1,104 @@
-import { useEffect, useRef, useState } from 'react'
-import { ErroDeApi } from '../api/client'
-import Cabecalho from './components/Cabecalho'
-import CampoMensagem from './components/CampoMensagem'
-import Mensagem, { Digitando, type DadosMensagem } from './components/Mensagem'
-import { buscarAulaAberta, type Aula } from './services/aulaService'
-import { enviarMensagem } from './services/chatService'
+import { useEffect, useRef, useState } from "react";
+import { ErroDeApi } from "../api/client";
+import Cabecalho from "./components/Cabecalho";
+import CampoMensagem from "./components/CampoMensagem";
+import Mensagem, { Digitando, type DadosMensagem } from "./components/Mensagem";
+import { buscarAulaAberta, type Aula } from "./services/aulaService";
+import { buscarHistorico, enviarMensagem } from "./services/chatService";
 
 type Props = {
-  token: string
-  aoSair: () => void
-}
+  token: string;
+  aoSair: () => void;
+};
 
 //-------------- component
 
 function Chat({ token, aoSair }: Props) {
-  const [mensagens, setMensagens] = useState<DadosMensagem[]>([])
-  const [aula, setAula] = useState<Aula | null>(null)
-  const [input, setInput] = useState('')
-  const [enviando, setEnviando] = useState(false)
-  const [erro, setErro] = useState<string | null>(null)
+  const [mensagens, setMensagens] = useState<DadosMensagem[]>([]);
+  const [aula, setAula] = useState<Aula | null>(null);
+  const [input, setInput] = useState("");
+  const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
 
-  const fimRef = useRef<HTMLDivElement>(null)
+  const listaRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    fimRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [mensagens, enviando])
+    /* Waits one frame before scrolling: right after the state changes the browser has
+    not laid the new text out yet, so scrollHeight would still be the old one and the
+    last message would stay hidden behind the input bar. */
+    const quadro = requestAnimationFrame(() => {
+      const lista = listaRef.current;
+      if (!lista) return;
+      lista.scrollTo({ top: lista.scrollHeight, behavior: "smooth" });
+    });
+    return () => cancelAnimationFrame(quadro);
+  }, [mensagens, enviando]);
 
   useEffect(() => {
     const carregarAula = async () => {
       try {
-        const dados = await buscarAulaAberta()
-        setAula(dados)
+        const dados = await buscarAulaAberta();
+        setAula(dados);
+
+        /* Anything the student already asked in this class comes back from Redis; the
+        greeting only shows up when the conversation is still empty. */
+        const historico = await buscarHistorico(token);
+        if (historico.length > 0) {
+          setMensagens(
+            historico.map((turno) => ({
+              role: turno.role === "user" ? "aluno" : "braz",
+              texto: turno.text,
+            })),
+          );
+          return;
+        }
+
         setMensagens([
           {
-            role: 'braz',
+            role: "braz",
             texto: dados
               ? `Olá! Alguma dúvida sobre ${dados.disciplina} hoje?`
-              : 'Olá! No momento não há nenhuma aula aberta.',
+              : "Olá! No momento não há nenhuma aula aberta.",
           },
-        ])
+        ]);
       } catch {
         setMensagens([
-          { role: 'braz', texto: 'Olá! Estou aqui para ajudar você a aprender.' },
-        ])
+          {
+            role: "braz",
+            texto: "Olá! Estou aqui para ajudar você a aprender.",
+          },
+        ]);
       }
-    }
-    void carregarAula()
-  }, [])
+    };
+    void carregarAula();
+  }, [token]);
 
   const perguntar = async () => {
-    const texto = input.trim()
-    if (!texto || enviando) return
+    const texto = input.trim();
+    if (!texto || enviando) return;
 
-    setMensagens((atual) => [...atual, { role: 'aluno', texto }])
-    setInput('')
-    setErro(null)
-    setEnviando(true)
+    setMensagens((atual) => [...atual, { role: "aluno", texto }]);
+    setInput("");
+    setErro(null);
+    setEnviando(true);
 
     try {
-      const resposta = await enviarMensagem(texto, token)
-      setMensagens((atual) => [...atual, { role: 'braz', texto: resposta }])
+      const resposta = await enviarMensagem(texto, token);
+      setMensagens((atual) => [...atual, { role: "braz", texto: resposta }]);
     } catch (error) {
       /* An expired or invalid token only shows up here, so this is where the session
       is dropped and the student goes back to the login screen. */
       if (error instanceof ErroDeApi && error.status === 401) {
-        aoSair()
-        return
+        aoSair();
+        return;
       }
       setErro(
-        error instanceof Error ? error.message : 'Erro ao falar com o Braz',
-      )
+        error instanceof Error ? error.message : "Erro ao falar com o Braz",
+      );
     } finally {
-      setEnviando(false)
+      setEnviando(false);
     }
-  }
+  };
 
   return (
     <div className="bg-black text-brand-light font-sans h-screen flex flex-col relative overflow-hidden selection:bg-brand-teal selection:text-white">
@@ -83,7 +108,10 @@ function Chat({ token, aoSair }: Props) {
 
       <Cabecalho aula={aula} aoSair={aoSair} />
 
-      <main className="relative flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-8 max-w-3xl mx-auto w-full pb-32">
+      <main
+        ref={listaRef}
+        className="relative flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-8 max-w-3xl mx-auto w-full"
+      >
         {mensagens.map((mensagem, indice) => (
           <Mensagem key={indice} mensagem={mensagem} />
         ))}
@@ -98,7 +126,9 @@ function Chat({ token, aoSair }: Props) {
           </div>
         )}
 
-        <div ref={fimRef} />
+        {/* Chrome does not count the padding-bottom of a scrolling flex column, so the
+        space the fixed input bar needs has to be a real element at the end of the list. */}
+        <div className="h-28 shrink-0" />
       </main>
 
       <CampoMensagem
@@ -108,7 +138,7 @@ function Chat({ token, aoSair }: Props) {
         aoEnviar={() => void perguntar()}
       />
     </div>
-  )
+  );
 }
 
-export default Chat
+export default Chat;

@@ -20,6 +20,27 @@
   animation: fadeIn 0.3s ease-out forwards;
 }
 
+@keyframes pensando {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+/* The delay lives here and not in a utility class: the shorthand above resets
+animation-delay, and whichever stylesheet loads last would win. */
+.animate-pensando {
+  animation: pensando 1.4s ease-in-out infinite;
+}
+.animate-pensando:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.animate-pensando:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
 body {
   margin: 0;
 }

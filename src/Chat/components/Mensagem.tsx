@@ -7,9 +7,6 @@ type Props = {
   mensagem: DadosMensagem
 }
 
-const CLASSE_AVATAR =
-  'w-12 h-12 rounded-full bg-brand-dark border-2 border-brand-teal flex-shrink-0 mt-1 object-cover'
-
 /* The student speaks in a bubble and Braz answers in plain text, the same way the
 big chat apps do it: the bubble marks what you wrote, the answer reads like a page. */
 function Mensagem({ mensagem }: Props) {
@@ -24,22 +21,22 @@ function Mensagem({ mensagem }: Props) {
   }
 
   return (
-    <div className="flex gap-4 max-w-3xl w-full animate-fade-in">
-      <img src="/images/icone-braz.png" alt="Braz" className={CLASSE_AVATAR} />
-      <div className="flex-1 text-brand-light leading-relaxed space-y-2 whitespace-pre-wrap">
-        <p>{mensagem.texto}</p>
-      </div>
+    <div className="max-w-3xl w-full animate-fade-in">
+      <p className="text-brand-light leading-relaxed whitespace-pre-wrap">
+        {mensagem.texto}
+      </p>
     </div>
   )
 }
 
+/* Three dots fading in and out of phase, one delay each, so the wait reads as Braz
+thinking instead of a frozen screen. */
 export function Digitando() {
   return (
-    <div className="flex gap-4 max-w-3xl w-full animate-fade-in">
-      <img src="/images/icone-braz.png" alt="Braz" className={CLASSE_AVATAR} />
-      <div className="flex-1 text-brand-light/60 leading-relaxed">
-        <p>Digitando...</p>
-      </div>
+    <div className="max-w-3xl w-full animate-fade-in flex items-center gap-1.5 h-6">
+      <span className="w-2 h-2 rounded-full bg-brand-light animate-pensando" />
+      <span className="w-2 h-2 rounded-full bg-brand-light animate-pensando" />
+      <span className="w-2 h-2 rounded-full bg-brand-light animate-pensando" />
     </div>
   )
 }

@@ -36,12 +36,12 @@ function CampoMensagem({ valor, enviando, aoMudar, aoEnviar }: Props) {
   const habilitado = valor.trim() && !enviando
 
   return (
-    <div className="fixed bottom-0 w-full bg-gradient-to-t from-black via-black to-transparent pt-10 pb-6 px-4">
+    <div className="fixed bottom-0 w-full bg-gradient-to-t from-black via-black to-transparent pt-6 pb-5 px-4">
       <form
         onSubmit={submeter}
         className="max-w-3xl mx-auto relative flex flex-col gap-3"
       >
-        <div className="bg-[#1a1a1a] rounded-[24px] border border-gray-700 focus-within:border-brand-teal transition-colors flex items-end p-2 pl-4 shadow-lg">
+        <div className="bg-[#1a1a1a] rounded-2xl border border-gray-700 focus-within:border-brand-teal transition-colors flex items-center p-1 pl-4 shadow-lg">
           <textarea
             ref={textareaRef}
             rows={1}
@@ -51,13 +51,13 @@ function CampoMensagem({ valor, enviando, aoMudar, aoEnviar }: Props) {
               ajustarAltura()
             }}
             onKeyDown={teclar}
-            className="w-full bg-transparent text-brand-light placeholder-gray-500 resize-none outline-none max-h-32 py-3 overflow-y-auto font-sans"
+            className="w-full bg-transparent text-brand-light placeholder-gray-500 resize-none outline-none max-h-32 py-1.5 leading-6 text-[0.95rem] overflow-y-auto font-sans"
             placeholder="Pergunte ao Braz..."
           />
           <button
             type="submit"
             disabled={!habilitado}
-            className={`p-3 m-1 transition-colors rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 ml-2 ${
+            className={`transition-colors rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 ml-2 text-sm ${
               habilitado ? 'bg-brand-teal text-white' : 'bg-gray-700 text-gray-300'
             }`}
           >
@@ -65,7 +65,7 @@ function CampoMensagem({ valor, enviando, aoMudar, aoEnviar }: Props) {
           </button>
         </div>
         <p className="text-center text-xs text-gray-600">
-          Braz pode cometer erros. Verifique informações importantes.
+          Braz pode cometer erros. Verifique as informações mais importantes com a professora.
         </p>
       </form>
     </div>
