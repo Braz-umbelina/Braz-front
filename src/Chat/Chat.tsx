@@ -19,7 +19,6 @@ function Chat({ token, aoSair }: Props) {
   const [input, setInput] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  const [barraAberta, setBarraAberta] = useState(true);
 
   const listaRef = useRef<HTMLElement>(null);
 
@@ -107,14 +106,28 @@ function Chat({ token, aoSair }: Props) {
       competing with the conversation. */}
       <div className="pointer-events-none absolute -top-[28rem] -left-[28rem] w-[70rem] h-[70rem] rounded-full bg-white/[0.06] blur-[180px]" />
 
-      <BarraLateral
-        aula={aula}
-        aberta={barraAberta}
-        aoAlternar={() => setBarraAberta((atual) => !atual)}
-        aoSair={aoSair}
-      />
+      <BarraLateral aoSair={aoSair} />
 
       <div className="relative flex-1 flex flex-col min-w-0">
+        {/* Loose in the corner instead of a header bar: nothing else sits up there,
+        and the class is something the student checks, not something he acts on. */}
+        <div className="absolute top-4 right-6 z-10 text-right hidden sm:block pointer-events-none">
+          {aula ? (
+            <>
+              <p className="text-[0.65rem] text-gray-400 uppercase tracking-widest">
+                {aula.professor ? `Professora ${aula.professor}` : ""}
+              </p>
+              <p className="text-xs font-semibold text-brand-light">
+                {aula.disciplina}
+              </p>
+            </>
+          ) : (
+            <p className="text-xs text-gray-500">
+              Nenhuma aula aberta no momento.
+            </p>
+          )}
+        </div>
+
         <main
           ref={listaRef}
           className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-8 max-w-3xl mx-auto w-full"

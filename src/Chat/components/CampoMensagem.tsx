@@ -64,6 +64,10 @@ function CampoMensagem({ valor, enviando, aoMudar, aoEnviar }: Props) {
             <i className="fa-solid fa-arrow-up" />
           </button>
         </div>
+        <p className="text-center text-xs text-gray-600">
+          O Braz pode cometer erros. Confirme com a professora o que for
+          importante.
+        </p>
       </form>
     </div>
   )

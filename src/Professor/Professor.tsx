@@ -1,10 +1,10 @@
 import { useEffect, useState, type FormEvent } from "react";
 import Alerta from "../components/Alerta";
+import OndaProfessora from "../components/OndaProfessora";
 import TelaChave from "./telas/TelaChave";
 import TelaProfessoras from "./telas/TelaProfessoras";
 import * as professorService from "./services/professorService";
 import type { Professora } from "./services/professorService";
-import { CLASSE_SUBTITULO, CLASSE_TITULO } from "../estilos";
 
 type Props = {
   aoAutenticar: (token: string) => void;
@@ -19,6 +19,8 @@ function Professor({ aoAutenticar }: Props) {
   const [carregando, setCarregando] = useState(true);
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+
+  const naChave = escolhida !== null;
 
   useEffect(() => {
     const carregarProfessoras = async () => {
@@ -68,31 +70,77 @@ function Professor({ aoAutenticar }: Props) {
   };
 
   return (
-    <div className="bg-brand-preto text-brand-light font-sans min-h-screen relative overflow-hidden selection:bg-brand-acao selection:text-black">
-      <div className="pointer-events-none absolute -top-[28rem] -left-[28rem] w-[70rem] h-[70rem] rounded-full bg-white/[0.06] blur-[180px]" />
+    <div className="bg-brand-preto text-brand-light font-sans min-h-screen flex items-center justify-center p-4 sm:p-8 selection:bg-brand-acao selection:text-black">
+      <OndaProfessora />
 
-      <main className="relative px-6 py-10">
-        <div className="w-full max-w-md mx-auto">
-          <div className="flex justify-center mb-8">
-            <img
-              src="/images/logo-escuro-braz.webp"
-              alt="Braz"
-              className="h-11 w-auto object-contain"
-            />
-          </div>
+      <div className="relative w-full max-w-5xl h-[36rem] rounded-[2rem] bg-brand-preto shadow-[0_30px_80px_-30px_rgba(0,0,0,0.6)] overflow-hidden flex">
+        {/* The green walks to the other side when she reaches the key screen, so the
+        step change is felt before the text is read. */}
+        <div
+          className={`hidden lg:block absolute inset-y-0 bg-brand-mata ${
+            naChave ? "left-0 right-[52%]" : "right-0 left-[52%]"
+          }`}
+          style={{
+            clipPath: "url(#ondaProfessora)",
+            transform: naChave ? "scaleX(-1)" : undefined,
+          }}
+          aria-hidden="true"
+        />
 
-          <div className="text-center mb-8">
-            <h1 className={CLASSE_TITULO}>Bem-vinda!</h1>
-            <p className={CLASSE_SUBTITULO}>
-              {escolhida
-                ? "Confirme a sua chave para entrar."
-                : "Selecione o seu nome para continuar."}
-            </p>
-          </div>
+        <div
+          className={`hidden lg:flex absolute inset-y-0 w-[44%] flex-col justify-center px-12 xl:px-16 ${
+            naChave ? "left-0 items-start text-left" : "right-0 items-end text-right"
+          }`}
+        >
+          <img
+            src="/images/icone-braz.webp"
+            alt="Braz"
+            className={`w-12 h-12 object-contain absolute top-10 ${
+              naChave ? "left-12 xl:left-16" : "right-12 xl:right-16"
+            }`}
+          />
 
+          {naChave ? (
+            <>
+              <h2 className="font-display font-bold text-3xl xl:text-4xl leading-tight text-white">
+                Olá,
+                <br />
+                {escolhida.nome}.
+              </h2>
+              <p className="text-sm text-brand-light/60 mt-4 max-w-xs">
+                O Braz auxilia os alunos. Você acompanha o caminho.
+              </p>
+            </>
+          ) : (
+            <>
+              <h2 className="font-display font-bold text-3xl xl:text-4xl leading-tight text-white">
+                Bom te ver,
+                <br />
+                professora.
+              </h2>
+              <p className="text-sm text-brand-light/60 mt-4 max-w-xs">
+                Escolha seu nome para abrir suas disciplinas.
+              </p>
+            </>
+          )}
+
+          <a
+            href="mailto:projetobraz.umbelina@gmail.com"
+            className={`absolute bottom-10 text-xs text-brand-light/30 hover:text-brand-amarelo transition-colors ${
+              naChave ? "left-12 xl:left-16" : "right-12 xl:right-16"
+            }`}
+          >
+            projetobraz.umbelina@gmail.com
+          </a>
+        </div>
+
+        <main
+          className={`relative z-10 w-full lg:w-[50%] flex flex-col justify-center px-8 sm:px-10 lg:px-14 py-8 ${
+            naChave ? "lg:ml-auto" : ""
+          }`}
+        >
           {escolhida ? (
             <TelaChave
-              nome={escolhida.nome}
               chave={chave}
               enviando={enviando}
               aoMudarChave={setChave}
@@ -108,8 +156,8 @@ function Professor({ aoAutenticar }: Props) {
           )}
 
           {erro && <Alerta texto={erro} tipo="erro" />}
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }
