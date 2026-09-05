@@ -36,12 +36,12 @@ function CampoMensagem({ valor, enviando, aoMudar, aoEnviar }: Props) {
   const habilitado = valor.trim() && !enviando
 
   return (
-    <div className="fixed bottom-0 w-full bg-gradient-to-t from-black via-black to-transparent pt-6 pb-5 px-4">
+    <div className="shrink-0 w-full bg-gradient-to-t from-brand-preto via-brand-preto to-transparent pt-6 pb-5 px-4">
       <form
         onSubmit={submeter}
         className="max-w-3xl mx-auto relative flex flex-col gap-3"
       >
-        <div className="bg-[#1a1a1a] rounded-2xl border border-gray-700 focus-within:border-brand-teal transition-colors flex items-center p-1 pl-4 shadow-lg">
+        <div className="bg-[#1a1a1a] rounded-2xl border border-gray-700 focus-within:border-brand-painel transition-colors flex items-center p-1 pl-4 shadow-lg">
           <textarea
             ref={textareaRef}
             rows={1}
@@ -58,15 +58,12 @@ function CampoMensagem({ valor, enviando, aoMudar, aoEnviar }: Props) {
             type="submit"
             disabled={!habilitado}
             className={`transition-colors rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 ml-2 text-sm ${
-              habilitado ? 'bg-brand-teal text-white' : 'bg-gray-700 text-gray-300'
+              habilitado ? 'bg-brand-acao text-black' : 'bg-gray-700 text-gray-300'
             }`}
           >
             <i className="fa-solid fa-arrow-up" />
           </button>
         </div>
-        <p className="text-center text-xs text-gray-600">
-          Braz pode cometer erros. Verifique as informações mais importantes com a professora.
-        </p>
       </form>
     </div>
   )

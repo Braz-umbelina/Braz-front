@@ -54,7 +54,7 @@ function CampoCodigo({ digitos, aoMudar }: Props) {
             inputMode="numeric"
             autoComplete="one-time-code"
             maxLength={1}
-            className="w-10 sm:w-12 h-14 bg-[#1a1a1a] border border-gray-700 focus:border-brand-teal rounded-xl text-center text-2xl text-white font-display outline-none transition-colors"
+            className="w-10 sm:w-12 h-14 bg-[#1a1a1a] border border-gray-700 focus:border-brand-acao rounded-xl text-center text-2xl text-white font-display outline-none transition-colors"
           />
         </div>
       ))}

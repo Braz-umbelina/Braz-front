@@ -13,7 +13,7 @@ function Mensagem({ mensagem }: Props) {
   if (mensagem.role === 'aluno') {
     return (
       <div className="flex justify-end w-full animate-fade-in">
-        <div className="bg-brand-dark text-white rounded-3xl rounded-tr-sm px-5 py-3 max-w-[85%] md:max-w-[75%] shadow-sm border border-brand-dark/50">
+        <div className="bg-brand-painel text-white rounded-3xl rounded-tr-sm px-5 py-3 max-w-[85%] md:max-w-[75%] shadow-sm border border-white/10">
           <p className="whitespace-pre-wrap">{mensagem.texto}</p>
         </div>
       </div>

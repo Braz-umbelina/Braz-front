@@ -1,7 +1,7 @@
 import type { FormEvent } from 'react'
 import CampoCodigo from '../components/CampoCodigo'
 import CampoSenha from '../components/CampoSenha'
-import { CLASSE_BOTAO, CLASSE_SUBTITULO, CLASSE_TITULO } from '../estilos'
+import { CLASSE_BOTAO, CLASSE_SUBTITULO, CLASSE_TITULO } from '../../estilos'
 
 type Props = {
   digitos: string[]

@@ -1,6 +1,6 @@
 import type { FormEvent } from "react";
 import CampoEmail from "../components/CampoEmail";
-import { CLASSE_BOTAO, CLASSE_SUBTITULO, CLASSE_TITULO } from "../estilos";
+import { CLASSE_BOTAO, CLASSE_SUBTITULO, CLASSE_TITULO } from "../../estilos";
 
 type Props = {
   email: string;

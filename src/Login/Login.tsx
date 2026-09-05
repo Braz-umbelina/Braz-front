@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 import { ErroDeApi } from "../api/client";
-import Alerta from "./components/Alerta";
+import Alerta from "../components/Alerta";
 import TelaEsqueci from "./telas/TelaEsqueci";
 import TelaLogin from "./telas/TelaLogin";
 import TelaRedefinir from "./telas/TelaRedefinir";
@@ -16,30 +17,6 @@ type Props = {
 
 const DIGITOS_VAZIOS = Array<string>(6).fill("");
 
-/* Verification belongs to the sign up flow and reset belongs to the password one, so
-they reuse the mascot of the screen that led the student there. */
-const MASCOTES: Record<Tela, { imagem: string; fala: string }> = {
-  login: {
-    imagem: "/images/mascote-login.webp",
-    fala: "Que bom ter você de volta! Vamos começar a nossa aula?",
-  },
-  registro: {
-    imagem: "/images/mascote-registro.webp",
-    fala: "Oi! Eu sou o Braz. Vamos dar o primeiro passo da nossa jornada?",
-  },
-  verificar: {
-    imagem: "/images/mascote-registro.webp",
-    fala: "Falta pouco! Confirme o código que enviei.",
-  },
-  esqueci: {
-    imagem: "/images/mascote-redefinir-senha.webp",
-    fala: "Sem problemas! Vamos recuperar sua senha.",
-  },
-  redefinir: {
-    imagem: "/images/mascote-redefinir-senha.webp",
-    fala: "Escolha uma senha nova e voltamos ao estudo.",
-  },
-};
 
 //-------------- component
 
@@ -56,7 +33,6 @@ function Login({ aoAutenticar }: Props) {
   const [esperaReenvio, setEsperaReenvio] = useState(0);
 
   const codigo = digitos.join("");
-  const mascote = MASCOTES[tela];
 
   /* Counts down the seconds the backend asked us to wait, so the student sees the button
   come back to life instead of clicking it and getting the same error again. */
@@ -153,43 +129,48 @@ function Login({ aoAutenticar }: Props) {
   };
 
   return (
-    <div className="bg-black text-brand-light font-sans min-h-screen relative overflow-hidden selection:bg-brand-teal selection:text-white">
-      {/* Light coming from the top left corner, same idea as the mascot circle: it breaks
-      the flat black without competing with the form. */}
-      <div className="pointer-events-none absolute -top-[28rem] -left-[28rem] w-[70rem] h-[70rem] rounded-full bg-brand-teal/20 blur-[180px]" />
+    <div className="bg-brand-claro dark:bg-brand-preto text-brand-tinta dark:text-brand-light font-sans min-h-screen flex items-center justify-center p-4 sm:p-8 selection:bg-brand-acao selection:text-black">
+      {/* The wave came out of Haikei as a 600x900 path and was normalised here, so the
+      clip follows the card whatever its size instead of being tied to those pixels. */}
+      <svg width="0" height="0" className="absolute">
+        <defs>
+          <clipPath id="ondaBraz" clipPathUnits="objectBoundingBox">
+            <path d="M0.3100 0.0000L1.0000 0.0000L1.0000 1.0000L0.3300 1.0000C0.3200 0.9950,0.2867 0.9850,0.2700 0.9700C0.2533 0.9550,0.2400 0.9350,0.2300 0.9100C0.2200 0.8850,0.2150 0.8517,0.2100 0.8200C0.2050 0.7883,0.2083 0.7483,0.2000 0.7200C0.1917 0.6917,0.1783 0.6700,0.1600 0.6500C0.1417 0.6300,0.1117 0.6183,0.0900 0.6000C0.0683 0.5817,0.0450 0.5617,0.0300 0.5400C0.0150 0.5183,0.0033 0.4967,0.0000 0.4700C0.0000 0.4433,0.0000 0.4083,0.0100 0.3800C0.0200 0.3517,0.0383 0.3250,0.0600 0.3000C0.0817 0.2750,0.1150 0.2533,0.1400 0.2300C0.1650 0.2067,0.1917 0.1850,0.2100 0.1600C0.2283 0.1350,0.2333 0.1067,0.2500 0.0800C0.2667 0.0533,0.3000 0.0133,0.3100 0.0000Z" />
+          </clipPath>
+        </defs>
+      </svg>
 
-      <header className="relative px-6 pt-3 lg:pl-16">
-        <img
-          src="/images/logo-principal.webp"
-          alt="Braz"
-          className="h-14 w-auto object-contain"
+      <div className="relative w-full max-w-5xl h-[36rem] rounded-[2rem] bg-white dark:bg-brand-preto shadow-[0_30px_80px_-30px_rgba(15,35,60,0.35)] overflow-hidden flex">
+        {/* The panel is one shade away from the card: the wave has to be read as a fold
+        in the same surface, not as a second box glued to the first. */}
+        <div
+          className="hidden lg:block absolute inset-y-0 right-0 left-[56%] bg-gray-50 dark:bg-brand-painel"
+          style={{ clipPath: "url(#ondaBraz)" }}
+          aria-hidden="true"
         />
-      </header>
 
-      <main className="relative flex justify-center px-6 pb-6 -mt-2">
-        {/* Barely there on purpose: a hint of light and a thin border give the form its
-        own space without turning into a solid box over the background. */}
-        <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm px-8 py-8 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.8)]">
-          {/* Braz greets from the top of the card, in the same shape the student will see
-          in the chat later: his avatar on the left and what he says beside it. */}
-          <div className="flex items-center gap-3 mb-7">
-            <div className="relative w-20 h-20 flex-shrink-0">
-              <div className="absolute inset-0 rounded-full bg-brand-teal" />
-              <img
-                src={mascote.imagem}
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 w-full h-full object-contain p-1"
-              />
-            </div>
-            <div className="relative flex-1 bg-white text-brand-dark rounded-2xl rounded-bl-sm px-4 py-2.5 shadow-[0_8px_20px_rgba(0,0,0,0.35)]">
-              <p className="font-display font-semibold text-xs leading-snug">
-                {mascote.fala}
-              </p>
-              <div className="absolute -left-1 bottom-3 w-3 h-3 bg-white rotate-45 rounded-[2px]" />
-            </div>
-          </div>
+        <div className="hidden lg:flex absolute inset-y-0 right-0 w-[46%] flex-col justify-center items-end text-right px-12 xl:px-16">
+          <img
+            src="/images/icone-escuro-braz.webp"
+            alt="Braz"
+            className="w-12 h-12 object-contain absolute top-10 right-12 xl:right-16"
+          />
+          <h2 className="font-display font-bold text-3xl xl:text-4xl leading-tight text-brand-tinta dark:text-white">
+            Pergunte.
+            <br />O Braz ensina.
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-brand-light/60 mt-4 max-w-xs">
+            Assistente educacional para alunos e professores.
+          </p>
+          <a
+            href="mailto:projetobraz.umbelina@gmail.com"
+            className="absolute bottom-10 right-12 xl:right-16 text-xs text-gray-400 dark:text-brand-light/30 hover:text-brand-acao transition-colors"
+          >
+            projetobraz.umbelina@gmail.com
+          </a>
+        </div>
 
+        <main className="relative z-10 w-full lg:w-[52%] flex flex-col justify-center px-8 sm:px-10 lg:px-14 py-8">
           {tela === "login" && (
             <TelaLogin
               email={email}
@@ -257,8 +238,28 @@ function Login({ aoAutenticar }: Props) {
 
           {erro && <Alerta texto={erro} tipo="erro" />}
           {aviso && !erro && <Alerta texto={aviso} tipo="aviso" />}
-        </div>
-      </main>
+
+          {tela === "registro" && (
+          <p className="text-[11px] text-gray-500 dark:text-brand-cinza mt-6 text-center whitespace-nowrap">
+            Ao criar sua conta, você concorda com os{" "}
+            <Link
+              to="/termos"
+              className="text-brand-acao font-semibold hover:opacity-80 transition-opacity"
+            >
+              Termos de Uso
+            </Link>{" "}
+            e a{" "}
+            <Link
+              to="/privacidade"
+              className="text-brand-acao font-semibold hover:opacity-80 transition-opacity whitespace-nowrap"
+            >
+              Política de Privacidade
+            </Link>
+            .
+          </p>
+        )}
+        </main>
+      </div>
     </div>
   );
 }

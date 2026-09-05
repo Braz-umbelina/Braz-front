@@ -1,4 +1,4 @@
-import { CLASSE_INPUT, CLASSE_LABEL } from '../estilos'
+import { CLASSE_INPUT, CLASSE_LABEL } from '../../estilos'
 
 type Props = {
   rotulo: string

@@ -5,7 +5,7 @@ import {
   CLASSE_LINK,
   CLASSE_SUBTITULO,
   CLASSE_TITULO,
-} from "../estilos";
+} from "../../estilos";
 
 type Props = {
   email: string;

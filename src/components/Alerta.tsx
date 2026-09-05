@@ -11,7 +11,7 @@ function Alerta({ texto, tipo }: Props) {
   return (
     <div
       className={`mt-5 flex items-start gap-2.5 text-sm animate-fade-in ${
-        erro ? "text-red-300" : "text-brand-teal"
+        erro ? "text-red-300" : "text-brand-acao"
       }`}
     >
       <i
