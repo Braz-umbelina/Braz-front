@@ -53,14 +53,14 @@ function AreaProfessor() {
   }
 
   return (
-    <div className="bg-brand-preto text-brand-light font-sans min-h-screen flex flex-col items-center justify-center gap-6">
-      <p className="font-display font-bold text-brand-acao">
+    <div className="bg-brand-claro text-brand-tinta dark:bg-brand-preto dark:text-brand-light font-sans min-h-screen flex flex-col items-center justify-center gap-6">
+      <p className="font-display font-bold text-brand-tinta dark:text-brand-acao">
         Painel em construção
       </p>
       <button
         type="button"
         onClick={sair}
-        className="text-sm text-brand-acao hover:text-white transition-colors"
+        className="text-sm text-brand-tinta hover:text-brand-mata dark:text-brand-acao dark:hover:text-white transition-colors"
       >
         Sair
       </button>

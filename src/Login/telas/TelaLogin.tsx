@@ -52,7 +52,7 @@ function TelaLogin({
           <button
             type="button"
             onClick={aoEsquecerSenha}
-            className="text-sm text-brand-destaque hover:opacity-80 transition-opacity"
+            className="text-sm text-brand-elo dark:text-brand-eloClaro hover:opacity-80 transition-opacity"
           >
             Esqueceu a senha?
           </button>

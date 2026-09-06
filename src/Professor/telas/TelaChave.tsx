@@ -28,7 +28,7 @@ function TelaChave({
       <button
         type="button"
         onClick={aoVoltar}
-        className="flex items-center gap-2 text-sm text-brand-light/50 hover:text-brand-amarelo transition-colors mb-6"
+        className="flex items-center gap-2 text-sm text-gray-500 dark:text-brand-light/50 hover:text-brand-ocre dark:hover:text-brand-amarelo transition-colors mb-6"
       >
         <i className="fa-solid fa-arrow-left text-xs" />
         Voltar
@@ -51,7 +51,7 @@ function TelaChave({
           <button
             type="button"
             onClick={() => setVisivel((atual) => !atual)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-brand-amarelo transition-colors"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-brand-ocre dark:hover:text-brand-amarelo transition-colors"
             aria-label={visivel ? "Ocultar chave" : "Mostrar chave"}
           >
             <i className={visivel ? "fa-solid fa-eye-slash" : "fa-solid fa-eye"} />

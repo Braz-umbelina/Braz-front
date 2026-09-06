@@ -41,7 +41,7 @@ function CampoCodigo({ digitos, aoMudar }: Props) {
       {digitos.map((digito, indice) => (
         <div key={indice} className="contents">
           {indice === 3 && (
-            <span className="text-gray-600 self-center font-bold">-</span>
+            <span className="text-gray-400 dark:text-gray-600 self-center font-bold">-</span>
           )}
           <input
             ref={(el) => {
@@ -54,7 +54,7 @@ function CampoCodigo({ digitos, aoMudar }: Props) {
             inputMode="numeric"
             autoComplete="one-time-code"
             maxLength={1}
-            className="w-10 sm:w-12 h-14 bg-[#1a1a1a] border border-gray-700 focus:border-brand-acao rounded-xl text-center text-2xl text-white font-display outline-none transition-colors"
+            className="w-10 sm:w-12 h-14 bg-white dark:bg-[#1a1a1a] border border-gray-300 dark:border-gray-700 focus:border-brand-tinta dark:focus:border-brand-acao rounded-xl text-center text-2xl text-brand-tinta dark:text-white font-display outline-none transition-colors"
           />
         </div>
       ))}

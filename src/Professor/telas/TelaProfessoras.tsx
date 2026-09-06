@@ -10,7 +10,9 @@ type Props = {
 function TelaProfessoras({ professoras, carregando, aoEscolher }: Props) {
   if (carregando) {
     return (
-      <p className="text-center text-sm text-brand-light/50">Carregando...</p>
+      <p className="text-center text-sm text-gray-500 dark:text-brand-light/50">
+        Carregando...
+      </p>
     );
   }
 
@@ -32,7 +34,7 @@ function TelaProfessoras({ professoras, carregando, aoEscolher }: Props) {
             type="button"
             onClick={() => aoEscolher(professora)}
             style={{ animationDelay: `${(indice + 1) * 90}ms` }}
-            className="animate-cascata font-display font-bold text-2xl text-white hover:text-brand-amarelo hover:translate-x-2 transition-all py-1.5"
+            className="animate-cascata font-display font-bold text-2xl text-brand-tinta dark:text-white hover:text-brand-ocre dark:hover:text-brand-amarelo hover:translate-x-2 transition-all py-1.5"
           >
             {professora.nome}
           </button>

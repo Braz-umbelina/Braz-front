@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/images/icone-braz-512.png" />
@@ -28,6 +28,9 @@
                 acao: '#FFFFFF',
                 destaque: '#4BC52F',
                 amarelo: '#FABC17',
+                ocre: '#8A6200',
+                elo: '#2B4F8F',
+                eloClaro: '#7FA8E8',
                 light: '#EDEDED',
                 cinza: '#8A8A8A',
                 superficie: '#141414',
@@ -40,6 +43,12 @@
             },
           },
         },
+      }
+    </script>
+    <script>
+      // runs before react so the screen never flashes in the wrong theme
+      if (localStorage.getItem('braz:tema') !== 'claro') {
+        document.documentElement.classList.add('dark')
       }
     </script>
   </head>

@@ -48,10 +48,10 @@ function TelaVerificar({
         </button>
       </form>
 
-      <p className="text-sm text-gray-400 mt-6">
+      <p className="text-sm text-gray-500 dark:text-gray-400 mt-6">
         Não recebeu?{" "}
         {esperaReenvio > 0 ? (
-          <span className="text-gray-500 font-bold">
+          <span className="text-gray-400 dark:text-gray-500 font-bold">
             Reenviar em {esperaReenvio}s
           </span>
         ) : (
@@ -66,7 +66,7 @@ function TelaVerificar({
         <br />
         <button
           onClick={aoVoltar}
-          className="mt-4 text-gray-500 hover:text-white text-xs underline"
+          className="mt-4 text-gray-400 hover:text-brand-tinta dark:text-gray-500 dark:hover:text-white text-xs underline"
         >
           Voltar ao login
         </button>

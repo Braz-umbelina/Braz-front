@@ -101,10 +101,10 @@ function Chat({ token, aoSair }: Props) {
   };
 
   return (
-    <div className="bg-brand-preto text-brand-light font-sans h-screen flex relative overflow-hidden selection:bg-brand-acao selection:text-black">
+    <div className="bg-brand-claro text-brand-tinta dark:bg-brand-preto dark:text-brand-light font-sans h-screen flex relative overflow-hidden selection:bg-brand-acao selection:text-black">
       {/* Light coming from the top left corner: it breaks the flat background without
       competing with the conversation. */}
-      <div className="pointer-events-none absolute -top-[28rem] -left-[28rem] w-[70rem] h-[70rem] rounded-full bg-white/[0.06] blur-[180px]" />
+      <div className="pointer-events-none absolute -top-[28rem] -left-[28rem] w-[70rem] h-[70rem] rounded-full bg-white dark:bg-white/[0.06] blur-[180px]" />
 
       <BarraLateral aoSair={aoSair} />
 
@@ -114,15 +114,15 @@ function Chat({ token, aoSair }: Props) {
         <div className="absolute top-4 right-6 z-10 text-right hidden sm:block pointer-events-none">
           {aula ? (
             <>
-              <p className="text-[0.65rem] text-gray-400 uppercase tracking-widest">
+              <p className="text-[0.65rem] text-gray-500 dark:text-gray-400 uppercase tracking-widest">
                 {aula.professor ? `Professora ${aula.professor}` : ""}
               </p>
-              <p className="text-xs font-semibold text-brand-light">
+              <p className="text-xs font-semibold text-brand-tinta dark:text-brand-light">
                 {aula.disciplina}
               </p>
             </>
           ) : (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-400 dark:text-gray-500">
               Nenhuma aula aberta no momento.
             </p>
           )}
@@ -140,7 +140,7 @@ function Chat({ token, aoSair }: Props) {
 
         {erro && (
           <div className="w-full flex justify-center animate-fade-in">
-            <div className="bg-red-950/60 border border-red-800 text-red-200 text-sm rounded-xl px-4 py-2 text-center">
+            <div className="bg-red-50 border border-red-200 text-red-700 dark:bg-red-950/60 dark:border-red-800 dark:text-red-200 text-sm rounded-xl px-4 py-2 text-center">
               {erro}
             </div>
           </div>

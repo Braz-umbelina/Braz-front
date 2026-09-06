@@ -28,7 +28,7 @@ function TelaRedefinir({
     <div className="animate-fade-in">
       <button
         onClick={aoVoltar}
-        className="text-gray-400 hover:text-white mb-4 transition-colors"
+        className="text-gray-500 hover:text-brand-tinta dark:text-gray-400 dark:hover:text-white mb-4 transition-colors"
       >
         <i className="fa-solid fa-arrow-left mr-2" /> Voltar
       </button>

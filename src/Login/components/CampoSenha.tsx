@@ -27,7 +27,7 @@ function CampoSenha({ rotulo, valor, aoMudar, placeholder }: Props) {
         <button
           type="button"
           onClick={() => setVisivel((atual) => !atual)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-brand-acao transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-tinta dark:text-gray-500 dark:hover:text-brand-acao transition-colors"
           aria-label={visivel ? 'Ocultar senha' : 'Mostrar senha'}
         >
           <i className={visivel ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'} />

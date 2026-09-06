@@ -130,14 +130,14 @@ function Login({ aoAutenticar }: Props) {
   };
 
   return (
-    <div className="bg-brand-claro dark:bg-brand-preto text-brand-tinta dark:text-brand-light font-sans min-h-screen flex items-center justify-center p-4 sm:p-8 selection:bg-brand-acao selection:text-black">
+    <div className="bg-brand-claro dark:bg-[#0A0F1C] text-brand-tinta dark:text-brand-light font-sans min-h-screen flex items-center justify-center p-4 sm:p-8 selection:bg-brand-acao selection:text-black">
       <OndaBraz />
 
       <div className="relative w-full max-w-5xl h-[36rem] rounded-[2rem] bg-white dark:bg-brand-preto shadow-[0_30px_80px_-30px_rgba(15,35,60,0.35)] overflow-hidden flex">
-        {/* The panel is one shade away from the card: the wave has to be read as a fold
-        in the same surface, not as a second box glued to the first. */}
+        {/* The panel keeps this blue in both themes, the way the teacher side keeps its
+        green: the light version of it washed out against the white card. */}
         <div
-          className="hidden lg:block absolute inset-y-0 right-0 left-[56%] bg-gray-50 dark:bg-brand-painel"
+          className="hidden lg:block absolute inset-y-0 right-0 left-[56%] bg-brand-painel"
           style={{ clipPath: "url(#ondaBraz)" }}
           aria-hidden="true"
         />
@@ -148,17 +148,17 @@ function Login({ aoAutenticar }: Props) {
             alt="Braz"
             className="w-12 h-12 object-contain absolute top-10 right-12 xl:right-16"
           />
-          <h2 className="font-display font-bold text-3xl xl:text-4xl leading-tight text-brand-tinta dark:text-white">
+          <h2 className="font-display font-bold text-3xl xl:text-4xl leading-tight text-white">
             Pergunte.
             <br />O Braz{" "}
             <span className="text-brand-amarelo">ensina</span>.
           </h2>
-          <p className="text-sm text-gray-500 dark:text-brand-light/60 mt-4 max-w-xs">
+          <p className="text-sm text-brand-light/60 mt-4 max-w-xs">
             Assistente educacional para alunos e professores.
           </p>
           <a
             href="mailto:projetobraz.umbelina@gmail.com"
-            className="absolute bottom-10 right-12 xl:right-16 text-xs text-gray-400 dark:text-brand-light/30 hover:text-brand-acao transition-colors"
+            className="absolute bottom-10 right-12 xl:right-16 text-xs text-brand-light/30 hover:text-brand-acao transition-colors"
           >
             projetobraz.umbelina@gmail.com
           </a>
@@ -238,14 +238,14 @@ function Login({ aoAutenticar }: Props) {
             Ao criar sua conta, você concorda com os{" "}
             <Link
               to="/termos"
-              className="text-brand-destaque font-semibold hover:opacity-80 transition-opacity"
+              className="text-brand-elo dark:text-brand-eloClaro font-semibold hover:opacity-80 transition-opacity"
             >
               Termos de Uso
             </Link>{" "}
             e a{" "}
             <Link
               to="/privacidade"
-              className="text-brand-destaque font-semibold hover:opacity-80 transition-opacity whitespace-nowrap"
+              className="text-brand-elo dark:text-brand-eloClaro font-semibold hover:opacity-80 transition-opacity whitespace-nowrap"
             >
               Política de Privacidade
             </Link>
