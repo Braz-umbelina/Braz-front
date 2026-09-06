@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ErroDeApi } from "../api/client";
 import Alerta from "../components/Alerta";
 import OndaBraz from "../components/OndaBraz";
+import Rodape from "../components/Rodape";
 import TelaEsqueci from "./telas/TelaEsqueci";
 import TelaLogin from "./telas/TelaLogin";
 import TelaRedefinir from "./telas/TelaRedefinir";
@@ -132,6 +133,7 @@ function Login({ aoAutenticar }: Props) {
   return (
     <div className="bg-brand-claro dark:bg-brand-fundo text-brand-tinta dark:text-brand-light font-sans min-h-screen flex items-center justify-center p-4 sm:p-8 selection:bg-brand-acao selection:text-black">
       <OndaBraz />
+      <Rodape />
 
       <div className="relative w-full max-w-5xl h-[36rem] rounded-[2rem] bg-white dark:bg-brand-preto shadow-[0_30px_80px_-30px_rgba(15,35,60,0.35)] overflow-hidden flex">
         {/* The panel keeps this blue in both themes, the way the teacher side keeps its
