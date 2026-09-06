@@ -36,7 +36,7 @@ function CampoMensagem({ valor, enviando, aoMudar, aoEnviar }: Props) {
   const habilitado = valor.trim() && !enviando
 
   return (
-    <div className="shrink-0 w-full bg-gradient-to-t from-brand-claro via-brand-claro dark:from-brand-preto dark:via-brand-preto to-transparent pt-6 pb-5 px-4">
+    <div className="shrink-0 w-full bg-gradient-to-t from-brand-claro via-brand-claro dark:from-black dark:via-black to-transparent pt-6 pb-5 px-4">
       <form
         onSubmit={submeter}
         className="max-w-3xl mx-auto relative flex flex-col gap-3"

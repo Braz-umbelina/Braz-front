@@ -2,6 +2,7 @@ import { useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Chat from "./Chat/Chat";
 import Login from "./Login/Login";
+import Painel from "./Painel/Painel";
 import Professor from "./Professor/Professor";
 
 const CHAVE_TOKEN_ALUNO = "braz:token:aluno";
@@ -52,20 +53,7 @@ function AreaProfessor() {
     return <Professor aoAutenticar={autenticar} />;
   }
 
-  return (
-    <div className="bg-brand-claro text-brand-tinta dark:bg-brand-preto dark:text-brand-light font-sans min-h-screen flex flex-col items-center justify-center gap-6">
-      <p className="font-display font-bold text-brand-tinta dark:text-brand-acao">
-        Painel em construção
-      </p>
-      <button
-        type="button"
-        onClick={sair}
-        className="text-sm text-brand-tinta hover:text-brand-mata dark:text-brand-acao dark:hover:text-white transition-colors"
-      >
-        Sair
-      </button>
-    </div>
-  );
+  return <Painel token={token} aoSair={sair} />;
 }
 
 function App() {

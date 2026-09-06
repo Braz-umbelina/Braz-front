@@ -101,7 +101,7 @@ function Chat({ token, aoSair }: Props) {
   };
 
   return (
-    <div className="bg-brand-claro text-brand-tinta dark:bg-brand-preto dark:text-brand-light font-sans h-screen flex relative overflow-hidden selection:bg-brand-acao selection:text-black">
+    <div className="bg-brand-claro text-brand-tinta dark:bg-black dark:text-brand-light font-sans h-screen flex relative overflow-hidden selection:bg-brand-acao selection:text-black">
       {/* Light coming from the top left corner: it breaks the flat background without
       competing with the conversation. */}
       <div className="pointer-events-none absolute -top-[28rem] -left-[28rem] w-[70rem] h-[70rem] rounded-full bg-white dark:bg-white/[0.06] blur-[180px]" />
