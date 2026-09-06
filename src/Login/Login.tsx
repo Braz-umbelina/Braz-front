@@ -130,7 +130,7 @@ function Login({ aoAutenticar }: Props) {
   };
 
   return (
-    <div className="bg-brand-claro dark:bg-[#0A0F1C] text-brand-tinta dark:text-brand-light font-sans min-h-screen flex items-center justify-center p-4 sm:p-8 selection:bg-brand-acao selection:text-black">
+    <div className="bg-brand-claro dark:bg-brand-fundo text-brand-tinta dark:text-brand-light font-sans min-h-screen flex items-center justify-center p-4 sm:p-8 selection:bg-brand-acao selection:text-black">
       <OndaBraz />
 
       <div className="relative w-full max-w-5xl h-[36rem] rounded-[2rem] bg-white dark:bg-brand-preto shadow-[0_30px_80px_-30px_rgba(15,35,60,0.35)] overflow-hidden flex">
