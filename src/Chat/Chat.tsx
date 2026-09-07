@@ -17,7 +17,8 @@ function Chat({ token, aoSair }: Props) {
   const [mensagens, setMensagens] = useState<DadosMensagem[]>([]);
   const [aula, setAula] = useState<Aula | null>(null);
   const [sincronizado, setSincronizado] = useState(false);
-  const [avisoConexao, setAvisoConexao] = useState("Verificando a aula...");
+  const [avisoConexao, setAvisoConexao] = useState<string | null>(null);
+  const [aulaCarregada, setAulaCarregada] = useState(false);
   const geracaoConversa = useRef(0);
   const envioEmCurso = useRef(false);
   const podeEnviarRef = useRef(false);
@@ -81,6 +82,8 @@ function Chat({ token, aoSair }: Props) {
         inicializado = true;
         podeEnviarRef.current = Boolean(dados && !dados.pausada);
         setSincronizado(true);
+        setAvisoConexao(null);
+        setAulaCarregada(true);
       } catch (error) {
         if (!ativo || atual !== versao) return;
         podeEnviarRef.current = false;
@@ -104,7 +107,7 @@ function Chat({ token, aoSair }: Props) {
       clearTimeout(repetir);
       podeEnviarRef.current = false;
       setSincronizado(false);
-      setAvisoConexao("Atualizando a aula...");
+      setAvisoConexao(null);
       void sincronizar();
     };
     eventos.addEventListener("aula-atualizada", atualizar);
@@ -126,9 +129,9 @@ function Chat({ token, aoSair }: Props) {
   }, [token]);
 
   const bloqueado = !sincronizado || !aula || aula.pausada;
-  const aviso = !sincronizado ? avisoConexao
-    : !aula ? "Nenhuma aula aberta. Aguarde a professora iniciar."
-    : aula.pausada ? "Aula pausada. Aguarde a professora liberar o chat."
+  const aviso = !sincronizado && avisoConexao ? avisoConexao
+    : !aula ? null
+    : aula.pausada ? "A professora pausou o chat."
     : null;
 
   const perguntar = async () => {
@@ -187,33 +190,59 @@ function Chat({ token, aoSair }: Props) {
 
         <main
           ref={listaRef}
-          className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-8 max-w-3xl mx-auto w-full"
+          className={aula
+            ? "flex-1 min-h-0 overflow-y-auto p-4 md:p-8 flex flex-col gap-8 max-w-3xl mx-auto w-full"
+            : "absolute inset-0 [@media(max-height:600px)]:bottom-28 overflow-y-auto p-4 md:p-8 flex flex-col max-w-3xl mx-auto w-full"}
         >
-          {mensagens.map((mensagem, indice) => (
-            <Mensagem key={indice} mensagem={mensagem} />
-          ))}
-
-          {enviando && <Digitando />}
-
-        {erro && (
-          <div className="w-full flex justify-center animate-fade-in">
-            <div className="bg-red-50 border border-red-200 text-red-700 dark:bg-red-950/60 dark:border-red-800 dark:text-red-200 text-sm rounded-xl px-4 py-2 text-center">
-              {erro}
+          {!aula ? aulaCarregada && (
+            <section className="flex-1 flex flex-col items-center justify-center text-center py-10 px-2 sm:-translate-x-12" aria-label="Espera pela aula">
+              <div className="w-14 h-14 mb-6 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 flex items-center justify-center">
+                <i className="fa-solid fa-book-open text-xl" aria-hidden="true" />
+              </div>
+              <h1 className="font-display text-2xl sm:text-3xl font-medium tracking-tight mb-3">
+                Uma pausa antes de aprender.
+              </h1>
+              <p className="max-w-sm text-sm sm:text-base text-gray-800 dark:text-gray-400 leading-relaxed">
+                Nenhuma aula aberta no momento. Quando a professora iniciar, seu chat será liberado automaticamente.
+              </p>
+              {aulaCarregada && (
+                <p className="mt-7 text-xs text-gray-700 dark:text-gray-400 flex items-center gap-2">
+                  <i className="fa-solid fa-tower-broadcast" aria-hidden="true" />
+                  Aguardando o início da aula
+                </p>
+              )}
+            </section>
+          ) : (
+            <>
+              {mensagens.map((mensagem, indice) => (
+                <Mensagem key={indice} mensagem={mensagem} />
+              ))}
+              {enviando && <Digitando />}
+            </>
+          )}
+          {erro && (
+            <div role="alert" className="w-full flex justify-center">
+              <div className="bg-red-50 border border-red-200 text-red-700 dark:bg-red-950/60 dark:border-red-800 dark:text-red-200 text-sm rounded-xl px-4 py-2 text-center">
+                {erro}
+              </div>
             </div>
-          </div>
-        )}
-
-          <div className="h-6 shrink-0" />
+          )}
         </main>
 
+        <div className="relative z-10 mt-auto shrink-0">
         <CampoMensagem
           valor={input}
           enviando={enviando}
           bloqueado={bloqueado}
           aviso={aviso}
+          pausada={Boolean(aula?.pausada) && !avisoConexao}
+          placeholder={!aula ? "Aguardando uma aula..."
+            : aula.pausada ? "Envio pausado pela professora"
+            : "Pergunte ao Braz..."}
           aoMudar={setInput}
           aoEnviar={() => void perguntar()}
         />
+        </div>
       </div>
     </div>
   );

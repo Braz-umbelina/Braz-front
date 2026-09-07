@@ -5,11 +5,13 @@ type Props = {
   enviando: boolean
   bloqueado: boolean
   aviso: string | null
+  pausada: boolean
+  placeholder: string
   aoMudar: (valor: string) => void
   aoEnviar: () => void
 }
 
-function CampoMensagem({ valor, enviando, bloqueado, aviso, aoMudar, aoEnviar }: Props) {
+function CampoMensagem({ valor, enviando, bloqueado, aviso, pausada, placeholder, aoMudar, aoEnviar }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const ajustarAltura = () => {
@@ -44,11 +46,23 @@ function CampoMensagem({ valor, enviando, bloqueado, aviso, aoMudar, aoEnviar }:
         className="max-w-3xl mx-auto relative flex flex-col gap-3"
       >
         {aviso && (
-          <p role="status" className="text-center text-sm text-brand-tinta dark:text-brand-light">
-            {aviso}
-          </p>
+          <div role="status" className={
+            pausada
+              ? "flex items-start gap-3 rounded-2xl bg-[#e3edc8] dark:bg-[#303d22] px-4 py-4 text-[#243729] dark:text-[#edf3e8]"
+              : "text-center text-sm text-gray-600 dark:text-gray-300"
+          }>
+            {pausada && <i className="fa-solid fa-pause mt-1" aria-hidden="true" />}
+            <div>
+              <p className="text-sm">{aviso}</p>
+              {pausada && (
+                <p className="text-xs mt-1 text-[#52634a] dark:text-[#c0cbb8]">
+                  Você pode continuar lendo. O envio volta assim que ela liberar.
+                </p>
+              )}
+            </div>
+          </div>
         )}
-        <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-300 dark:border-gray-700 focus-within:border-brand-painel transition-colors flex items-center p-1 pl-4 shadow-lg">
+        <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-300 dark:border-gray-700 focus-within:border-brand-painel transition-colors flex items-center p-1 pl-4 shadow-sm">
           <textarea
             ref={textareaRef}
             rows={1}
@@ -61,7 +75,7 @@ function CampoMensagem({ valor, enviando, bloqueado, aviso, aoMudar, aoEnviar }:
             }}
             onKeyDown={teclar}
             className="w-full bg-transparent text-brand-tinta dark:text-brand-light placeholder-gray-400 dark:placeholder-gray-500 resize-none outline-none max-h-32 py-1.5 leading-6 text-[0.95rem] overflow-y-auto font-sans"
-            placeholder={bloqueado ? 'Aguarde para enviar uma mensagem...' : 'Pergunte ao Braz...'}
+            placeholder={placeholder}
           />
           <button
             type="submit"
