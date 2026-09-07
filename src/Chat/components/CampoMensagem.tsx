@@ -3,15 +3,15 @@ import { useRef, type FormEvent, type KeyboardEvent } from 'react'
 type Props = {
   valor: string
   enviando: boolean
+  bloqueado: boolean
+  aviso: string | null
   aoMudar: (valor: string) => void
   aoEnviar: () => void
 }
 
-function CampoMensagem({ valor, enviando, aoMudar, aoEnviar }: Props) {
+function CampoMensagem({ valor, enviando, bloqueado, aviso, aoMudar, aoEnviar }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  /* The textarea grows with the text instead of scrolling, so a long question stays
-  readable while the student writes it. */
   const ajustarAltura = () => {
     const el = textareaRef.current
     if (!el) return
@@ -21,6 +21,7 @@ function CampoMensagem({ valor, enviando, aoMudar, aoEnviar }: Props) {
 
   const submeter = (e: FormEvent) => {
     e.preventDefault()
+    if (bloqueado || enviando || !valor.trim()) return
     aoEnviar()
     if (textareaRef.current) textareaRef.current.style.height = 'auto'
   }
@@ -28,12 +29,13 @@ function CampoMensagem({ valor, enviando, aoMudar, aoEnviar }: Props) {
   const teclar = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
+      if (bloqueado || enviando || !valor.trim()) return
       aoEnviar()
       if (textareaRef.current) textareaRef.current.style.height = 'auto'
     }
   }
 
-  const habilitado = valor.trim() && !enviando
+  const habilitado = valor.trim() && !enviando && !bloqueado
 
   return (
     <div className="shrink-0 w-full bg-gradient-to-t from-brand-claro via-brand-claro dark:from-black dark:via-black to-transparent pt-6 pb-5 px-4">
@@ -41,10 +43,17 @@ function CampoMensagem({ valor, enviando, aoMudar, aoEnviar }: Props) {
         onSubmit={submeter}
         className="max-w-3xl mx-auto relative flex flex-col gap-3"
       >
+        {aviso && (
+          <p role="status" className="text-center text-sm text-brand-tinta dark:text-brand-light">
+            {aviso}
+          </p>
+        )}
         <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-300 dark:border-gray-700 focus-within:border-brand-painel transition-colors flex items-center p-1 pl-4 shadow-lg">
           <textarea
             ref={textareaRef}
             rows={1}
+            disabled={bloqueado}
+            aria-label="Mensagem para o Braz"
             value={valor}
             onChange={(e) => {
               aoMudar(e.target.value)
@@ -52,10 +61,11 @@ function CampoMensagem({ valor, enviando, aoMudar, aoEnviar }: Props) {
             }}
             onKeyDown={teclar}
             className="w-full bg-transparent text-brand-tinta dark:text-brand-light placeholder-gray-400 dark:placeholder-gray-500 resize-none outline-none max-h-32 py-1.5 leading-6 text-[0.95rem] overflow-y-auto font-sans"
-            placeholder="Pergunte ao Braz..."
+            placeholder={bloqueado ? 'Aguarde para enviar uma mensagem...' : 'Pergunte ao Braz...'}
           />
           <button
             type="submit"
+            aria-label="Enviar mensagem"
             disabled={!habilitado}
             className={`transition-colors rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 ml-2 text-sm ${
               habilitado
