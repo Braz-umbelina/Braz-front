@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import OndaProfessora from "../../components/OndaProfessora";
 import type { AulaAberta, AulaAtual, Disciplina } from "../services/aulaService";
 
 type Props = {
@@ -6,6 +8,7 @@ type Props = {
   aulaAberta: AulaAberta | null;
   escolhida: string;
   agindo: boolean;
+  acao: string | null;
   confirmando: boolean;
   aoEscolher: (id: string) => void;
   aoIniciar: () => void;
@@ -21,12 +24,28 @@ const horario = (iso: string) =>
     minute: "2-digit",
   });
 
+const duracao = (iso: string) => {
+  const minutos = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+  if (minutos < 1) return "agora há pouco";
+  if (minutos < 60) return `há ${minutos} min`;
+  const horas = Math.floor(minutos / 60);
+  const resto = minutos % 60;
+  return resto === 0 ? `há ${horas}h` : `há ${horas}h${resto}`;
+};
+
+const CLASSE_BOTAO_PAINEL =
+  "w-full rounded-full bg-brand-acao px-6 py-3 font-display font-semibold text-base text-black hover:bg-transparent hover:text-white border border-brand-acao disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-brand-acao disabled:hover:text-black transition-all";
+
+const CLASSE_BOTAO_VAZADO =
+  "w-full rounded-full border border-white/30 px-6 py-3 font-display font-semibold text-base text-white hover:bg-white/10 disabled:opacity-40 transition-colors";
+
 function TelaAula({
   disciplinas,
   aulaAtual,
   aulaAberta,
   escolhida,
   agindo,
+  acao,
   confirmando,
   aoEscolher,
   aoIniciar,
@@ -35,120 +54,172 @@ function TelaAula({
   aoAlternarPausa,
   aoFinalizar,
 }: Props) {
-  if (aulaAtual) {
-    return (
-      <div className="animate-fade-in">
-        <p className="text-[0.65rem] uppercase tracking-widest text-gray-500 dark:text-brand-light/40 mb-2">
-          {aulaAtual.pausada ? "Aula pausada" : "Aula em andamento"}
-        </p>
-        <h2 className="font-display font-bold text-3xl text-brand-tinta dark:text-white">
-          {aulaAtual.disciplina}
-        </h2>
-        <p className="text-sm text-gray-500 dark:text-brand-light/50 mt-1">
-          Aberta às {horario(aulaAtual.abertaEm)}
-          {aulaAberta?.professor ? ` por ${aulaAberta.professor}` : ""}
-        </p>
+  const [, redesenhar] = useState(0);
 
-        {/* Pausing only stops the Braz from answering; the conversation stays in
-        Redis and the reports are not written until the class is finished. */}
-        <p className="text-sm text-gray-500 dark:text-brand-light/50 mt-6 max-w-md">
-          {aulaAtual.pausada
-            ? "O Braz não está respondendo os alunos. Retome quando quiser voltar."
-            : "O Braz está respondendo os alunos desta turma."}
-        </p>
-
-        <div className="flex flex-wrap gap-3 mt-6">
-          <button
-            type="button"
-            onClick={aoAlternarPausa}
-            disabled={agindo}
-            className="rounded-full border border-brand-tinta dark:border-white/20 px-6 py-2.5 font-display font-semibold text-sm text-brand-tinta dark:text-white hover:bg-brand-tinta hover:text-white dark:hover:bg-white/10 disabled:opacity-40 transition-colors"
-          >
-            {aulaAtual.pausada ? "Retomar aula" : "Pausar aula"}
-          </button>
-
-          <button
-            type="button"
-            onClick={aoFinalizar}
-            disabled={agindo}
-            className="rounded-full bg-brand-tinta dark:bg-brand-acao px-6 py-2.5 font-display font-semibold text-sm text-white dark:text-black hover:opacity-90 disabled:opacity-40 transition-opacity"
-          >
-            {agindo ? "Finalizando..." : "Finalizar e gerar relatórios"}
-          </button>
-        </div>
-
-        <p className="text-xs text-gray-400 dark:text-brand-light/30 mt-4 max-w-md">
-          Finalizar encerra a aula para todos e escreve os relatórios. Não tem
-          volta.
-        </p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!aulaAtual) return;
+    const id = setInterval(() => redesenhar((n) => n + 1), 60000);
+    return () => clearInterval(id);
+  }, [aulaAtual]);
 
   return (
-    <div className="animate-fade-in">
-      <h2 className="font-display font-bold text-3xl text-brand-tinta dark:text-white">
-        Abrir uma aula
-      </h2>
-      <p className="text-sm text-gray-500 dark:text-brand-light/50 mt-1 mb-6">
-        Escolha a disciplina desta aula.
-      </p>
+    <div className="relative flex-1 min-w-0 flex overflow-hidden">
+      <OndaProfessora />
 
-      <div className="flex flex-col items-start gap-1 min-h-[10rem]">
-        {disciplinas.map((disciplina) => (
-          <button
-            key={disciplina.id}
-            type="button"
-            onClick={() => aoEscolher(disciplina.id)}
-            className={`font-display font-bold text-2xl transition-all py-1.5 ${
-              escolhida === disciplina.id
-                ? "text-brand-ocre dark:text-brand-amarelo translate-x-2"
-                : "text-brand-tinta dark:text-white hover:text-brand-ocre dark:hover:text-brand-amarelo hover:translate-x-2"
-            }`}
-          >
-            {disciplina.nome}
-          </button>
-        ))}
-      </div>
+      {/* Same fold as her login screen: the panel carries the state of the class and
+      the buttons, and the left side is only the choice. */}
+      <div
+        className="hidden lg:block absolute inset-y-0 right-0 left-[47%] bg-brand-mata"
+        style={{ clipPath: "url(#ondaProfessora)" }}
+        aria-hidden="true"
+      />
 
-      {/* Opening a class closes whatever class is open, whoever opened it, and writes
-      its reports. She has to see whose class that is before the click. */}
-      {confirmando && aulaAberta && (
-        <div className="mt-6 rounded-2xl border border-brand-ocre/40 dark:border-brand-amarelo/30 bg-brand-ocre/5 dark:bg-brand-amarelo/5 p-5 max-w-md">
-          <p className="text-sm text-brand-tinta dark:text-brand-light">
-            {aulaAberta.professor} está com uma aula de {aulaAberta.disciplina}{" "}
-            aberta agora. Abrir a sua encerra aquela e gera os relatórios dela.
-          </p>
-          <div className="flex gap-3 mt-4">
+      <main
+        key={aulaAtual ? "com-aula" : "sem-aula"}
+        className="relative z-10 w-full lg:w-[46%] flex flex-col justify-start pt-24 px-8 lg:px-12 pb-8 animate-fade-in"
+      >
+        <h2 className="font-display font-bold text-3xl text-brand-tinta dark:text-white">
+          {aulaAtual ? "Suas disciplinas" : "Abrir uma aula"}
+        </h2>
+        <p className="text-sm text-gray-500 dark:text-brand-light/50 mt-1 mb-6">
+          {aulaAtual
+            ? "Encerre a aula atual para abrir outra."
+            : "Escolha a disciplina desta aula."}
+        </p>
+
+        <div className="flex flex-col items-start gap-1 min-h-[10rem]">
+          {disciplinas.map((disciplina) => (
             <button
+              key={disciplina.id}
               type="button"
-              onClick={aoCancelar}
-              className="rounded-full border border-gray-300 dark:border-white/20 px-5 py-2 text-sm text-brand-tinta dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+              onClick={() => aoEscolher(disciplina.id)}
+              disabled={aulaAtual !== null}
+              className={`font-display font-bold text-2xl text-left transition-all py-1.5 ${
+                aulaAtual
+                  ? aulaAtual.disciplina === disciplina.nome
+                    ? "text-brand-ocre dark:text-brand-amarelo cursor-default"
+                    : "text-brand-tinta/40 dark:text-white/30 cursor-default"
+                  : escolhida === disciplina.id
+                    ? "text-brand-ocre dark:text-brand-amarelo translate-x-2"
+                    : escolhida
+                      ? "text-brand-tinta dark:text-white"
+                      : "text-brand-tinta dark:text-white hover:text-brand-ocre dark:hover:text-brand-amarelo hover:translate-x-2"
+              }`}
             >
-              Cancelar
+              {disciplina.nome}
             </button>
-            <button
-              type="button"
-              onClick={aoConfirmar}
-              disabled={agindo}
-              className="rounded-full bg-brand-tinta dark:bg-brand-acao px-5 py-2 font-display font-semibold text-sm text-white dark:text-black hover:opacity-90 disabled:opacity-40 transition-opacity"
-            >
-              {agindo ? "Abrindo..." : "Encerrar aquela e abrir a minha"}
-            </button>
-          </div>
+          ))}
         </div>
-      )}
+      </main>
 
-      {!confirmando && (
-        <button
-          type="button"
-          onClick={aoIniciar}
-          disabled={!escolhida || agindo}
-          className="mt-6 rounded-full bg-brand-tinta dark:bg-brand-acao px-6 py-2.5 font-display font-semibold text-sm text-white dark:text-black hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
-        >
-          {agindo ? "Abrindo..." : "Iniciar aula"}
-        </button>
-      )}
+      <div
+        key={aulaAtual ? "aberta" : "livre"}
+        className="hidden lg:flex absolute inset-y-0 right-0 w-[36%] flex-col justify-center px-8 xl:px-12 animate-fade-in"
+      >
+        {aulaAtual ? (
+          <>
+            <p className="text-[0.65rem] uppercase tracking-widest text-brand-light/40 mb-2">
+              {aulaAtual.pausada ? "Aula pausada" : "Aula em andamento"}
+            </p>
+            <h3 className="font-display font-bold text-3xl xl:text-4xl leading-tight text-white">
+              {aulaAtual.disciplina}
+            </h3>
+            <p className="text-base text-brand-light/50 mt-1">
+              Aberta às {horario(aulaAtual.abertaEm)} &middot;{" "}
+              {duracao(aulaAtual.abertaEm)}
+            </p>
+
+            <p className="text-base text-brand-light/60 mt-5 mb-6 min-h-[3.5rem]">
+              {aulaAtual.pausada
+                ? "O histórico da turma é preservado durante a pausa."
+                : "A pausa suspende as respostas do Braz mas não encerra a aula."}
+            </p>
+
+            <div className="flex flex-col gap-3 max-w-sm">
+              <button
+                type="button"
+                onClick={aoAlternarPausa}
+                disabled={agindo}
+                className={CLASSE_BOTAO_VAZADO}
+              >
+                {aulaAtual.pausada ? "Retomar aula" : "Pausar aula"}
+              </button>
+
+              <button
+                type="button"
+                onClick={aoFinalizar}
+                disabled={agindo}
+                className={CLASSE_BOTAO_PAINEL}
+              >
+                {acao === "finalizar" ? "Finalizando..." : "Finalizar aula"}
+              </button>
+            </div>
+
+            <p className="text-xs text-brand-light/30 mt-4 max-w-sm text-center">
+              O encerramento é definitivo e gera os relatórios da turma.
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="text-[0.65rem] uppercase tracking-widest text-brand-light/40 mb-2">
+              Nenhuma aula aberta
+            </p>
+            <h3 className="font-display font-bold text-3xl xl:text-4xl leading-tight text-white min-h-[4rem]">
+              Pronta para
+              <br />
+              começar.
+            </h3>
+            <p className="text-base text-brand-light/60 mt-4 mb-6 max-w-sm min-h-[3.5rem]">
+              Os alunos acessam o Braz somente durante a aula. Ao encerrar, é
+              gerado um relatório individual por aluno participante.
+            </p>
+
+            {/* Opening a class closes whatever class is open, whoever opened it, and
+            writes its reports. She has to see whose class that is before the click. */}
+            {confirmando && aulaAberta ? (
+              <div className="max-w-sm">
+                <p className="text-sm text-brand-amarelo">
+                  Há uma aula de {aulaAberta.disciplina} em andamento, aberta
+                  por {aulaAberta.professor}. Iniciar uma nova aula encerra a
+                  atual e gera os relatórios dela.
+                </p>
+                <div className="flex flex-col gap-3 mt-4">
+                  <button
+                    type="button"
+                    onClick={aoConfirmar}
+                    disabled={agindo}
+                    className={CLASSE_BOTAO_PAINEL}
+                  >
+                    {acao === "abrir"
+                      ? "Abrindo..."
+                      : "Encerrar a atual e iniciar"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={aoCancelar}
+                    className={CLASSE_BOTAO_VAZADO}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="max-w-sm">
+                <button
+                  type="button"
+                  onClick={aoIniciar}
+                  disabled={!escolhida || agindo}
+                  className={CLASSE_BOTAO_PAINEL}
+                >
+                  {acao === "abrir" || acao === "verificar"
+                    ? "Abrindo..."
+                    : "Iniciar aula"}
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

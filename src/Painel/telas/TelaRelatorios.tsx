@@ -49,7 +49,9 @@ function TelaRelatorios({
               className={`text-left transition-colors ${
                 selecionada === aula.id
                   ? "text-brand-ocre dark:text-brand-amarelo"
-                  : "text-brand-tinta dark:text-white hover:text-brand-ocre dark:hover:text-brand-amarelo"
+                  : selecionada
+                    ? "text-brand-tinta dark:text-white"
+                    : "text-brand-tinta dark:text-white hover:text-brand-ocre dark:hover:text-brand-amarelo"
               }`}
             >
               <span className="block font-display font-semibold text-sm leading-snug">

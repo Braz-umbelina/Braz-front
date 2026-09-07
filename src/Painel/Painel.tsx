@@ -37,9 +37,23 @@ function Painel({ token, aoSair }: Props) {
   const [relatorios, setRelatorios] = useState<Relatorio[]>([]);
   const [carregandoRelatorios, setCarregandoRelatorios] = useState(false);
 
-  const [agindo, setAgindo] = useState(false);
+  const [acao, setAcao] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
+
+  /* The notice clears itself: it reports something that already happened, so leaving
+  it on screen only makes her wonder whether it is about the last click or this one. */
+  useEffect(() => {
+    if (!erro && !aviso) return;
+    const id = setTimeout(
+      () => {
+        setErro(null);
+        setAviso(null);
+      },
+      erro ? 8000 : 5000,
+    );
+    return () => clearTimeout(id);
+  }, [erro, aviso]);
 
   const trocarTema = () => {
     const novo = tema === "escuro" ? "claro" : "escuro";
@@ -49,12 +63,12 @@ function Painel({ token, aoSair }: Props) {
 
   /* Wraps every call so an expired token drops the session in one place instead of
   each button having to know what a 401 means. */
-  const chamar = async (acao: () => Promise<void>) => {
+  const chamar = async (nome: string, executar: () => Promise<void>) => {
     setErro(null);
     setAviso(null);
-    setAgindo(true);
+    setAcao(nome);
     try {
-      await acao();
+      await executar();
     } catch (error) {
       if (error instanceof ErroDeApi && error.status === 401) {
         aoSair();
@@ -62,20 +76,14 @@ function Painel({ token, aoSair }: Props) {
       }
       setErro(error instanceof Error ? error.message : "Erro inesperado");
     } finally {
-      setAgindo(false);
+      setAcao(null);
     }
   };
 
-  /* The open class is read from two routes: /aula/atual carries the id the buttons
-  need, and /aula/aberta carries the teacher's name, which is what tells her whether
-  the class open right now is hers. */
+  /* /aula/atual answers null when the class open right now belongs to another
+  teacher, so what comes back here is always hers. */
   const carregarEstado = async () => {
-    const [atual, aberta] = await Promise.all([
-      aulaService.buscarAulaAtual(token),
-      aulaService.buscarAulaAberta(),
-    ]);
-    setAulaAtual(atual);
-    setAulaAberta(aberta);
+    setAulaAtual(await aulaService.buscarAulaAtual(token));
   };
 
   /* The effects do not go through chamar: it sets state before the first await, and
@@ -83,14 +91,12 @@ function Painel({ token, aoSair }: Props) {
   useEffect(() => {
     const carregar = async () => {
       try {
-        const [lista, atual, aberta] = await Promise.all([
+        const [lista, atual] = await Promise.all([
           aulaService.listarDisciplinas(token),
           aulaService.buscarAulaAtual(token),
-          aulaService.buscarAulaAberta(),
         ]);
         setDisciplinas(lista);
         setAulaAtual(atual);
-        setAulaAberta(aberta);
       } catch (error) {
         if (error instanceof ErroDeApi && error.status === 401) {
           aoSair();
@@ -120,16 +126,23 @@ function Painel({ token, aoSair }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aba, token]);
 
-  const iniciar = () => {
-    if (aulaAberta) {
-      setConfirmando(true);
-      return;
-    }
-    void confirmarInicio();
-  };
+  /* The open class is read again on the click: the one loaded when the panel opened
+  may be stale, and acting on it would close a colleague's class with no warning. */
+  const iniciar = () =>
+    void chamar("verificar", async () => {
+      const aberta = await aulaService.buscarAulaAberta();
+      setAulaAberta(aberta);
+      if (aberta) {
+        setConfirmando(true);
+        return;
+      }
+      await aulaService.abrirAula(escolhida, token);
+      await carregarEstado();
+      setEscolhida("");
+    });
 
   const confirmarInicio = () =>
-    chamar(async () => {
+    chamar("abrir", async () => {
       await aulaService.abrirAula(escolhida, token);
       await carregarEstado();
       setConfirmando(false);
@@ -138,7 +151,7 @@ function Painel({ token, aoSair }: Props) {
 
   const alternarPausa = () => {
     if (!aulaAtual) return;
-    void chamar(async () => {
+    void chamar("pausa", async () => {
       if (aulaAtual.pausada) {
         await aulaService.despausarAula(aulaAtual.id, token);
       } else {
@@ -150,7 +163,7 @@ function Painel({ token, aoSair }: Props) {
 
   const finalizar = () => {
     if (!aulaAtual) return;
-    void chamar(async () => {
+    void chamar("finalizar", async () => {
       const dados = await aulaService.fecharAula(aulaAtual.id, token);
       await carregarEstado();
       setAviso(
@@ -164,7 +177,7 @@ function Painel({ token, aoSair }: Props) {
     setSelecionada(aulaId);
     setRelatorios([]);
     setCarregandoRelatorios(true);
-    void chamar(async () => {
+    void chamar("relatorios", async () => {
       setRelatorios(await aulaService.buscarRelatorios(aulaId, token));
     }).finally(() => setCarregandoRelatorios(false));
   };
@@ -179,20 +192,17 @@ function Painel({ token, aoSair }: Props) {
   return (
     <div className="bg-brand-claro text-brand-tinta dark:bg-brand-preto dark:text-brand-light font-sans h-screen flex overflow-hidden selection:bg-brand-acao selection:text-black">
       <aside className="relative z-20 shrink-0 h-full w-52 flex flex-col border-r border-gray-200 dark:border-white/5 bg-white dark:bg-white/[0.02] p-4">
-        <div className="flex items-center gap-3 mb-8">
+        <div className="mb-8">
           <img
-            src="/images/icone-escuro-braz.webp"
+            src="/images/logo-braz.webp"
             alt="Braz"
-            className="h-8 w-8 object-contain dark:hidden"
+            className="h-20 w-auto object-contain object-left dark:hidden"
           />
           <img
-            src="/images/icone-braz.webp"
+            src="/images/logo-escuro-braz.webp"
             alt="Braz"
-            className="h-8 w-8 object-contain hidden dark:block"
+            className="h-20 w-auto object-contain object-left hidden dark:block"
           />
-          <span className="font-display font-bold text-lg text-brand-tinta dark:text-white">
-            Braz
-          </span>
         </div>
 
         <nav className="flex flex-col gap-1">
@@ -229,24 +239,25 @@ function Painel({ token, aoSair }: Props) {
         </div>
       </aside>
 
-      <main className="flex-1 min-w-0 overflow-y-auto p-8 lg:p-12">
-        <div className="max-w-3xl h-full flex flex-col">
-          {aba === "aula" ? (
-            <TelaAula
-              disciplinas={disciplinas}
-              aulaAtual={aulaAtual}
-              aulaAberta={aulaAberta}
-              escolhida={escolhida}
-              agindo={agindo}
-              confirmando={confirmando}
-              aoEscolher={setEscolhida}
-              aoIniciar={iniciar}
-              aoConfirmar={() => void confirmarInicio()}
-              aoCancelar={() => setConfirmando(false)}
-              aoAlternarPausa={alternarPausa}
-              aoFinalizar={finalizar}
-            />
-          ) : (
+      <main className="relative flex-1 min-w-0 flex flex-col overflow-hidden">
+        {aba === "aula" ? (
+          <TelaAula
+            disciplinas={disciplinas}
+            aulaAtual={aulaAtual}
+            aulaAberta={aulaAberta}
+            escolhida={escolhida}
+            agindo={acao !== null}
+            acao={acao}
+            confirmando={confirmando}
+            aoEscolher={setEscolhida}
+            aoIniciar={iniciar}
+            aoConfirmar={() => void confirmarInicio()}
+            aoCancelar={() => setConfirmando(false)}
+            aoAlternarPausa={alternarPausa}
+            aoFinalizar={finalizar}
+          />
+        ) : (
+          <div className="flex-1 min-h-0 overflow-hidden p-8 lg:p-12">
             <TelaRelatorios
               aulas={aulas}
               selecionada={selecionada}
@@ -254,11 +265,15 @@ function Painel({ token, aoSair }: Props) {
               carregandoRelatorios={carregandoRelatorios}
               aoSelecionar={selecionarAula}
             />
-          )}
+          </div>
+        )}
 
-          {erro && <Alerta texto={erro} tipo="erro" />}
-          {aviso && !erro && <Alerta texto={aviso} tipo="aviso" />}
-        </div>
+        {(erro || aviso) && (
+          <div className="absolute inset-x-0 bottom-0 z-20 px-8 lg:px-12 pb-6">
+            {erro && <Alerta texto={erro} tipo="erro" />}
+            {aviso && !erro && <Alerta texto={aviso} tipo="aviso" />}
+          </div>
+        )}
       </main>
     </div>
   );
