@@ -29,10 +29,12 @@ function Painel({ token, aoSair }: Props) {
   const [disciplinas, setDisciplinas] = useState<Disciplina[]>([]);
   const [aulaAtual, setAulaAtual] = useState<AulaAtual | null>(null);
   const [aulaAberta, setAulaAberta] = useState<AulaAberta | null>(null);
+  const [carregandoPainel, setCarregandoPainel] = useState(true);
   const [escolhida, setEscolhida] = useState("");
   const [confirmando, setConfirmando] = useState(false);
 
   const [aulas, setAulas] = useState<ResumoAula[]>([]);
+  const [carregandoAulas, setCarregandoAulas] = useState(true);
   const [selecionada, setSelecionada] = useState<string | null>(null);
   const [relatorios, setRelatorios] = useState<Relatorio[]>([]);
   const [carregandoRelatorios, setCarregandoRelatorios] = useState(false);
@@ -91,40 +93,28 @@ function Painel({ token, aoSair }: Props) {
   useEffect(() => {
     const carregar = async () => {
       try {
-        const [lista, atual] = await Promise.all([
+        const [lista, atual, historico] = await Promise.all([
           aulaService.listarDisciplinas(token),
           aulaService.buscarAulaAtual(token),
+          aulaService.listarAulas(token),
         ]);
         setDisciplinas(lista);
         setAulaAtual(atual);
+        setAulas(historico);
       } catch (error) {
         if (error instanceof ErroDeApi && error.status === 401) {
           aoSair();
           return;
         }
         setErro(error instanceof Error ? error.message : "Erro inesperado");
+      } finally {
+        setCarregandoPainel(false);
+        setCarregandoAulas(false);
       }
     };
     void carregar();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
-
-  useEffect(() => {
-    if (aba !== "relatorios") return;
-    const carregar = async () => {
-      try {
-        setAulas(await aulaService.listarAulas(token));
-      } catch (error) {
-        if (error instanceof ErroDeApi && error.status === 401) {
-          aoSair();
-          return;
-        }
-        setErro(error instanceof Error ? error.message : "Erro inesperado");
-      }
-    };
-    void carregar();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [aba, token]);
 
   /* The open class is read again on the click: the one loaded when the panel opened
   may be stale, and acting on it would close a colleague's class with no warning. */
@@ -165,7 +155,11 @@ function Painel({ token, aoSair }: Props) {
     if (!aulaAtual) return;
     void chamar("finalizar", async () => {
       const dados = await aulaService.fecharAula(aulaAtual.id, token);
-      await carregarEstado();
+      const [, historico] = await Promise.all([
+        carregarEstado(),
+        aulaService.listarAulas(token),
+      ]);
+      setAulas(historico);
       setAviso(
         `Aula encerrada. ${dados.gerados} relatório(s) gerado(s)` +
           (dados.falhas > 0 ? `, ${dados.falhas} falha(s).` : "."),
@@ -243,6 +237,7 @@ function Painel({ token, aoSair }: Props) {
         {aba === "aula" ? (
           <TelaAula
             disciplinas={disciplinas}
+            carregando={carregandoPainel}
             aulaAtual={aulaAtual}
             aulaAberta={aulaAberta}
             escolhida={escolhida}
@@ -260,6 +255,7 @@ function Painel({ token, aoSair }: Props) {
           <div className="flex-1 min-h-0 overflow-hidden p-8 lg:p-12">
             <TelaRelatorios
               aulas={aulas}
+              carregandoAulas={carregandoAulas}
               selecionada={selecionada}
               relatorios={relatorios}
               carregandoRelatorios={carregandoRelatorios}

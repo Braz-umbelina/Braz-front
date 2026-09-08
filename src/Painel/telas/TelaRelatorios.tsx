@@ -2,6 +2,7 @@ import type { Relatorio, ResumoAula } from "../services/aulaService";
 
 type Props = {
   aulas: ResumoAula[];
+  carregandoAulas: boolean;
   selecionada: string | null;
   relatorios: Relatorio[];
   carregandoRelatorios: boolean;
@@ -22,6 +23,7 @@ const ROTULO_ESCLARECIDA = {
 
 function TelaRelatorios({
   aulas,
+  carregandoAulas,
   selecionada,
   relatorios,
   carregandoRelatorios,
@@ -34,19 +36,31 @@ function TelaRelatorios({
           Aulas
         </p>
 
-        {aulas.length === 0 && (
+        {carregandoAulas && (
+          <div className="animate-pulse space-y-4" aria-label="Carregando aulas">
+            {["w-32", "w-40", "w-28", "w-36"].map((largura, indice) => (
+              <div key={indice} className="space-y-2">
+                <div className={`h-4 ${largura} rounded bg-gray-300 dark:bg-white/10`} />
+                <div className="h-3 w-14 rounded bg-gray-200 dark:bg-white/[0.06]" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {!carregandoAulas && aulas.length === 0 && (
           <p className="text-sm text-gray-400 dark:text-brand-light/30">
             Nenhuma aula ainda.
           </p>
         )}
 
-        <div className="flex flex-col items-start gap-2">
-          {aulas.map((aula) => (
+        <div className={`flex flex-col items-start gap-2 ${carregandoAulas ? "hidden" : ""}`}>
+          {aulas.map((aula, indice) => (
             <button
               key={aula.id}
               type="button"
               onClick={() => aoSelecionar(aula.id)}
-              className={`text-left transition-colors ${
+              style={{ animationDelay: `${(indice + 1) * 60}ms` }}
+              className={`animate-cascata text-left transition-colors ${
                 selecionada === aula.id
                   ? "text-brand-ocre dark:text-brand-amarelo"
                   : selecionada
@@ -67,7 +81,19 @@ function TelaRelatorios({
       </div>
 
       <div className="flex-1 min-w-0 overflow-y-auto">
-        {!selecionada && (
+        {carregandoRelatorios && (
+          <div className="animate-pulse space-y-4" aria-label="Carregando relatórios">
+            {[0, 1, 2].map((item) => (
+              <div key={item} className="rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-5 space-y-3">
+                <div className="h-5 w-40 rounded bg-gray-300 dark:bg-white/10" />
+                <div className="h-3 w-28 rounded bg-gray-200 dark:bg-white/[0.06]" />
+                <div className="h-4 w-full rounded bg-gray-200 dark:bg-white/[0.06]" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {!carregandoAulas && !selecionada && (
           <p className="text-sm text-gray-400 dark:text-brand-light/30">
             Escolha uma aula para ver os relatórios.
           </p>
@@ -81,11 +107,12 @@ function TelaRelatorios({
           </p>
         )}
 
-        <div className="flex flex-col gap-4">
-          {relatorios.map((relatorio) => (
+        <div className={`flex flex-col gap-4 ${carregandoRelatorios ? "hidden" : ""}`}>
+          {relatorios.map((relatorio, indice) => (
             <div
               key={relatorio.id}
-              className="rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-5"
+              style={{ animationDelay: `${(indice + 1) * 70}ms` }}
+              className="animate-cascata rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-5"
             >
               <div className="flex items-baseline justify-between gap-4">
                 <h3 className="font-display font-semibold text-brand-tinta dark:text-white">

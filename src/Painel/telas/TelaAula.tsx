@@ -4,6 +4,7 @@ import type { AulaAberta, AulaAtual, Disciplina } from "../services/aulaService"
 
 type Props = {
   disciplinas: Disciplina[];
+  carregando: boolean;
   aulaAtual: AulaAtual | null;
   aulaAberta: AulaAberta | null;
   escolhida: string;
@@ -41,6 +42,7 @@ const CLASSE_BOTAO_VAZADO =
 
 function TelaAula({
   disciplinas,
+  carregando,
   aulaAtual,
   aulaAberta,
   escolhida,
@@ -61,6 +63,38 @@ function TelaAula({
     const id = setInterval(() => redesenhar((n) => n + 1), 60000);
     return () => clearInterval(id);
   }, [aulaAtual]);
+
+  if (carregando) {
+    return (
+      <div className="relative flex-1 min-w-0 flex overflow-hidden">
+        <OndaProfessora />
+        <div
+          className="hidden lg:block absolute inset-y-0 right-0 left-[47%] bg-brand-mata"
+          style={{ clipPath: "url(#ondaProfessora)" }}
+          aria-hidden="true"
+        />
+        <main className="relative z-10 w-full lg:w-[46%] pt-24 px-8 lg:px-12">
+          <div className="animate-pulse space-y-4" aria-label="Carregando painel">
+            <div className="h-9 w-48 rounded-lg bg-gray-300 dark:bg-white/10" />
+            <div className="h-4 w-64 rounded bg-gray-200 dark:bg-white/[0.06]" />
+            <div className="pt-4 space-y-3">
+              <div className="h-7 w-40 rounded bg-gray-300 dark:bg-white/10" />
+              <div className="h-7 w-56 rounded bg-gray-300 dark:bg-white/10" />
+              <div className="h-7 w-44 rounded bg-gray-300 dark:bg-white/10" />
+            </div>
+          </div>
+        </main>
+        <div className="hidden lg:flex absolute inset-y-0 right-0 w-[36%] items-center px-8 xl:px-12">
+          <div className="w-full animate-pulse space-y-4" aria-hidden="true">
+            <div className="h-3 w-32 rounded bg-white/10" />
+            <div className="h-10 w-56 rounded-lg bg-white/10" />
+            <div className="h-4 w-full max-w-sm rounded bg-white/10" />
+            <div className="h-12 w-full max-w-sm rounded-full bg-white/10" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex-1 min-w-0 flex overflow-hidden">

@@ -195,22 +195,35 @@ function Chat({ token, aoSair }: Props) {
             : "absolute inset-0 [@media(max-height:600px)]:bottom-28 overflow-y-auto p-4 md:p-8 flex flex-col max-w-3xl mx-auto w-full"}
         >
           {!aula ? aulaCarregada && (
-            <section className="flex-1 flex flex-col items-center justify-center text-center py-10 px-2 sm:-translate-x-12" aria-label="Espera pela aula">
-              <div className="w-14 h-14 mb-6 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 flex items-center justify-center">
-                <i className="fa-solid fa-book-open text-xl" aria-hidden="true" />
+            <section className="flex-1 flex items-center justify-center py-10 px-2 sm:-translate-x-12" aria-label="Espera pela aula">
+              <div className="w-full max-w-xl rounded-3xl border border-gray-300 bg-white p-6 shadow-lg shadow-slate-900/5 dark:border-white/10 dark:bg-[#171a1e] dark:shadow-black/30 sm:p-8">
+                <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:items-start sm:text-left">
+                  <div className="w-14 h-14 shrink-0 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center">
+                    <img
+                      src="/images/icone-escuro-braz.webp"
+                      alt="Braz"
+                      className="w-10 h-10 object-contain dark:hidden"
+                    />
+                    <img
+                      src="/images/icone-braz.webp"
+                      alt="Braz"
+                      className="hidden w-10 h-10 object-contain dark:block"
+                    />
+                  </div>
+                  <div>
+                    <h1 className="font-display text-2xl font-medium tracking-tight mb-3">
+                      Uma pausa antes de aprender.
+                    </h1>
+                    <p className="text-sm sm:text-base text-gray-800 dark:text-gray-300 leading-relaxed">
+                      Nenhuma aula aberta no momento. Quando a professora iniciar, seu chat será liberado automaticamente.
+                    </p>
+                    <p className="mt-5 text-xs text-gray-700 dark:text-gray-400 flex items-center justify-center gap-2 sm:justify-start">
+                      <i className="fa-solid fa-tower-broadcast" aria-hidden="true" />
+                      Aguardando o início da aula
+                    </p>
+                  </div>
+                </div>
               </div>
-              <h1 className="font-display text-2xl sm:text-3xl font-medium tracking-tight mb-3">
-                Uma pausa antes de aprender.
-              </h1>
-              <p className="max-w-sm text-sm sm:text-base text-gray-800 dark:text-gray-400 leading-relaxed">
-                Nenhuma aula aberta no momento. Quando a professora iniciar, seu chat será liberado automaticamente.
-              </p>
-              {aulaCarregada && (
-                <p className="mt-7 text-xs text-gray-700 dark:text-gray-400 flex items-center gap-2">
-                  <i className="fa-solid fa-tower-broadcast" aria-hidden="true" />
-                  Aguardando o início da aula
-                </p>
-              )}
             </section>
           ) : (
             <>
