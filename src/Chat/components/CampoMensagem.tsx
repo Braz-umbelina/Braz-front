@@ -45,18 +45,19 @@ function CampoMensagem({ valor, enviando, bloqueado, aviso, pausada, placeholder
         onSubmit={submeter}
         className="max-w-3xl mx-auto relative flex flex-col gap-3"
       >
+        {/* Amber, not green: this says he cannot send, and green reads as a go-ahead. */}
         {aviso && (
           <div role="status" className={
             pausada
-              ? "flex items-start gap-3 rounded-2xl bg-[#e3edc8] dark:bg-[#303d22] px-4 py-4 text-[#243729] dark:text-[#edf3e8]"
+              ? "flex items-start gap-3 rounded-2xl bg-[#fdf3d6] dark:bg-[#3a2f10] px-4 py-4 text-[#5c4405] dark:text-[#f5e3b8]"
               : "text-center text-sm text-gray-600 dark:text-gray-300"
           }>
             {pausada && <i className="fa-solid fa-pause mt-1" aria-hidden="true" />}
             <div>
               <p className="text-sm">{aviso}</p>
               {pausada && (
-                <p className="text-xs mt-1 text-[#52634a] dark:text-[#c0cbb8]">
-                  Você pode continuar lendo. O envio volta assim que ela liberar.
+                <p className="text-xs mt-1 text-[#7a5f13] dark:text-[#d6c391]">
+                  O envio de mensagens é retomado quando a aula for liberada.
                 </p>
               )}
             </div>

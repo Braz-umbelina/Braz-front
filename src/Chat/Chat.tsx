@@ -88,11 +88,13 @@ function Chat({ token, aoSair }: Props) {
         if (!ativo || atual !== versao) return;
         podeEnviarRef.current = false;
         setSincronizado(false);
-        setAvisoConexao("Não foi possível atualizar o chat. Tentando novamente...");
+        /* A 401 here is a refused token: nothing to retry, so drop the session
+        instead of leaving him on a chat that answers nothing. */
         if (error instanceof ErroDeApi && error.status === 401) {
-          setAvisoConexao("Sua sessão expirou. Saia e entre novamente.");
+          aoSair();
           return;
         }
+        setAvisoConexao("Não foi possível atualizar o chat. Tentando novamente...");
         repetir = setTimeout(() => void sincronizar(), 5000);
       } finally {
         executando = false;
@@ -126,12 +128,12 @@ function Chat({ token, aoSair }: Props) {
       clearTimeout(repetir);
       eventos.close();
     };
-  }, [token]);
+  }, [token, aoSair]);
 
   const bloqueado = !sincronizado || !aula || aula.pausada;
   const aviso = !sincronizado && avisoConexao ? avisoConexao
     : !aula ? null
-    : aula.pausada ? "A professora pausou o chat."
+    : aula.pausada ? "Aula pausada pela professora."
     : null;
 
   const perguntar = async () => {
@@ -170,9 +172,12 @@ function Chat({ token, aoSair }: Props) {
 
       <BarraLateral aoSair={aoSair} />
 
-      <div className="relative flex-1 flex flex-col min-w-0">
+      {/* -ml-16 puts the column back under the bar so mx-auto centres against the
+      screen and not against what the bar leaves. Only from lg: below that the
+      conversation would run under the bar. */}
+      <div className="relative flex-1 flex flex-col min-w-0 lg:-ml-16">
         <div className="absolute top-4 right-6 z-10 text-right hidden sm:block pointer-events-none">
-          {aula ? (
+          {aula && (
             <>
               <p className="text-[0.65rem] text-gray-500 dark:text-gray-400 uppercase tracking-widest">
                 {aula.professor ? `Professora ${aula.professor}` : ""}
@@ -181,10 +186,6 @@ function Chat({ token, aoSair }: Props) {
                 {aula.disciplina}
               </p>
             </>
-          ) : (
-            <p className="text-xs text-gray-400 dark:text-gray-500">
-              Nenhuma aula aberta no momento.
-            </p>
           )}
         </div>
 
@@ -192,38 +193,29 @@ function Chat({ token, aoSair }: Props) {
           ref={listaRef}
           className={aula
             ? "flex-1 min-h-0 overflow-y-auto p-4 md:p-8 flex flex-col gap-8 max-w-3xl mx-auto w-full"
-            : "absolute inset-0 [@media(max-height:600px)]:bottom-28 overflow-y-auto p-4 md:p-8 flex flex-col max-w-3xl mx-auto w-full"}
+            : "absolute inset-0 overflow-y-auto p-4 md:p-8 flex flex-col max-w-3xl mx-auto w-full"}
         >
           {!aula ? aulaCarregada && (
-            <section className="flex-1 flex items-center justify-center py-10 px-2 sm:-translate-x-12" aria-label="Espera pela aula">
-              <div className="w-full max-w-xl rounded-3xl border border-gray-300 bg-white p-6 shadow-lg shadow-slate-900/5 dark:border-white/10 dark:bg-[#171a1e] dark:shadow-black/30 sm:p-8">
-                <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:items-start sm:text-left">
-                  <div className="w-14 h-14 shrink-0 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center">
-                    <img
-                      src="/images/icone-escuro-braz.webp"
-                      alt="Braz"
-                      className="w-10 h-10 object-contain dark:hidden"
-                    />
-                    <img
-                      src="/images/icone-braz.webp"
-                      alt="Braz"
-                      className="hidden w-10 h-10 object-contain dark:block"
-                    />
-                  </div>
-                  <div>
-                    <h1 className="font-display text-2xl font-medium tracking-tight mb-3">
-                      Uma pausa antes de aprender.
-                    </h1>
-                    <p className="text-sm sm:text-base text-gray-800 dark:text-gray-300 leading-relaxed">
-                      Nenhuma aula aberta no momento. Quando a professora iniciar, seu chat será liberado automaticamente.
-                    </p>
-                    <p className="mt-5 text-xs text-gray-700 dark:text-gray-400 flex items-center justify-center gap-2 sm:justify-start">
-                      <i className="fa-solid fa-tower-broadcast" aria-hidden="true" />
-                      Aguardando o início da aula
-                    </p>
-                  </div>
-                </div>
-              </div>
+            <section className="flex-1 flex flex-col items-center justify-center gap-7 py-10 px-2 text-center" aria-label="Espera pela aula">
+              {/* logo-escuro is the light mark, for the dark theme: these files name
+              themselves the opposite way from the icone ones. The nudge is the mark's
+              optical offset, the word weighs more than the bubble. */}
+              <img
+                src="/images/logo-braz.webp"
+                alt="Braz"
+                className="h-24 sm:h-32 object-contain -translate-x-[2.5%] dark:hidden"
+              />
+              <img
+                src="/images/logo-escuro-braz.webp"
+                alt="Braz"
+                className="hidden h-24 sm:h-32 object-contain -translate-x-[2.5%] dark:block"
+              />
+              <h1 className="font-display text-3xl sm:text-4xl font-medium tracking-tight">
+                Aguardando o início da aula.
+              </h1>
+              <p className="max-w-lg text-base sm:text-lg text-gray-800 dark:text-gray-400 leading-relaxed">
+                Nenhuma aula aberta no momento. Quando a professora iniciar, seu chat será liberado automaticamente.
+              </p>
             </section>
           ) : (
             <>
@@ -242,20 +234,21 @@ function Chat({ token, aoSair }: Props) {
           )}
         </main>
 
-        <div className="relative z-10 mt-auto shrink-0">
-        <CampoMensagem
-          valor={input}
-          enviando={enviando}
-          bloqueado={bloqueado}
-          aviso={aviso}
-          pausada={Boolean(aula?.pausada) && !avisoConexao}
-          placeholder={!aula ? "Aguardando uma aula..."
-            : aula.pausada ? "Envio pausado pela professora"
-            : "Pergunte ao Braz..."}
-          aoMudar={setInput}
-          aoEnviar={() => void perguntar()}
-        />
-        </div>
+        {aula && (
+          <div className="animate-cascata relative z-10 mt-auto shrink-0">
+            <CampoMensagem
+              valor={input}
+              enviando={enviando}
+              bloqueado={bloqueado}
+              aviso={aviso}
+              pausada={Boolean(aula.pausada) && !avisoConexao}
+              placeholder={aula.pausada ? "Envio pausado pela professora"
+                : "Pergunte ao Braz..."}
+              aoMudar={setInput}
+              aoEnviar={() => void perguntar()}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

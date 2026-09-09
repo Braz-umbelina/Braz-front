@@ -1,18 +1,21 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Chat from "./Chat/Chat";
 import Login from "./Login/Login";
 import Painel from "./Painel/Painel";
 import Professor from "./Professor/Professor";
+import { lerSessao, useExpiracaoDaSessao } from "./sessao";
 
 const CHAVE_TOKEN_ALUNO = "braz:token:aluno";
 const CHAVE_TOKEN_PROFESSOR = "braz:token:professor";
 
 /* The token lives in localStorage so a refresh doesn't send the student back to the
-login screen. It expires in 8h on the backend, and the chat drops it on any 401. */
+login screen. It expires in 8h on the backend, and the chat drops it on any 401. An
+expired one never reaches the first render, and one that expires with the tab open logs
+out on its own. */
 function AreaAluno() {
   const [token, setToken] = useState<string | null>(() =>
-    localStorage.getItem(CHAVE_TOKEN_ALUNO),
+    lerSessao(CHAVE_TOKEN_ALUNO),
   );
 
   const autenticar = (novoToken: string) => {
@@ -20,10 +23,12 @@ function AreaAluno() {
     setToken(novoToken);
   };
 
-  const sair = () => {
+  const sair = useCallback(() => {
     localStorage.removeItem(CHAVE_TOKEN_ALUNO);
     setToken(null);
-  };
+  }, []);
+
+  useExpiracaoDaSessao(token, sair);
 
   if (!token) {
     return <Login aoAutenticar={autenticar} />;
@@ -36,7 +41,7 @@ function AreaAluno() {
 class and by a student right after, and one login must not overwrite the other. */
 function AreaProfessor() {
   const [token, setToken] = useState<string | null>(() =>
-    localStorage.getItem(CHAVE_TOKEN_PROFESSOR),
+    lerSessao(CHAVE_TOKEN_PROFESSOR),
   );
 
   const autenticar = (novoToken: string) => {
@@ -44,10 +49,12 @@ function AreaProfessor() {
     setToken(novoToken);
   };
 
-  const sair = () => {
+  const sair = useCallback(() => {
     localStorage.removeItem(CHAVE_TOKEN_PROFESSOR);
     setToken(null);
-  };
+  }, []);
+
+  useExpiracaoDaSessao(token, sair);
 
   if (!token) {
     return <Professor aoAutenticar={autenticar} />;

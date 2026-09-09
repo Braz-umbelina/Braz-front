@@ -215,7 +215,7 @@ function TelaAula({
                 <p className="text-sm text-brand-amarelo">
                   Há uma aula de {aulaAberta.disciplina} em andamento, aberta
                   por {aulaAberta.professor}. Iniciar uma nova aula encerra a
-                  atual e gera os relatórios dela.
+                  atual.
                 </p>
                 <div className="flex flex-col gap-3 mt-4">
                   <button
