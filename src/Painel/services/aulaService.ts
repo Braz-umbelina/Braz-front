@@ -27,6 +27,9 @@ export type ResumoAula = {
   disciplina: { nome: string };
   abertaEm: string;
   fechadaEm: string | null;
+  /* How many students talked in this class and still have no report. The backend
+  writes it whenever it finishes a round, so zero means the class is complete. */
+  pendentes: number;
 };
 
 export type Relatorio = {
@@ -72,3 +75,9 @@ export const listarAulas = (token: string) =>
 
 export const buscarRelatorios = (aulaId: string, token: string) =>
   requisitar<Relatorio[]>(`/aula/relatorio/${aulaId}`, { token });
+
+export const gerarRelatorios = (aulaId: string, token: string) =>
+  requisitar<{ gerados: number; falhas: number }>(
+    `/aula/gerar-relatorio/${aulaId}`,
+    { metodo: "POST", token },
+  );

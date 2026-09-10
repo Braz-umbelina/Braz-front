@@ -7,7 +7,14 @@ type Props = {
   relatorios: Relatorio[];
   carregandoRelatorios: boolean;
   aoSelecionar: (aulaId: string) => void;
+  aoVoltar: () => void;
+  gerandoAula: string | null;
+  falhasPorAula: Record<string, number>;
+  aoGerar: (aulaId: string) => void;
 };
+
+const LIMITE_TENTATIVAS = 3;
+const CONTATO = "projetobraz.umbelina@gmail.com";
 
 const data = (iso: string) =>
   new Date(iso).toLocaleDateString("pt-BR", {
@@ -28,10 +35,20 @@ function TelaRelatorios({
   relatorios,
   carregandoRelatorios,
   aoSelecionar,
+  aoVoltar,
+  gerandoAula,
+  falhasPorAula,
+  aoGerar,
 }: Props) {
   return (
-    <div className="animate-fade-in flex gap-8 h-full min-h-0">
-      <div className="w-52 shrink-0 overflow-y-auto">
+    /* Two columns do not fit a phone, so below lg the same two panes become two steps:
+    the list fills the screen, and picking a class replaces it with its reports. */
+    <div className="animate-fade-in flex flex-col lg:flex-row gap-8 h-full min-h-0">
+      <div
+        className={`w-full lg:w-52 shrink-0 overflow-y-auto ${
+          selecionada ? "hidden lg:block" : ""
+        }`}
+      >
         <p className="text-[0.65rem] uppercase tracking-widest text-gray-500 dark:text-brand-light/40 mb-3">
           Aulas
         </p>
@@ -55,32 +72,80 @@ function TelaRelatorios({
 
         <div className={`flex flex-col items-start gap-2 ${carregandoAulas ? "hidden" : ""}`}>
           {aulas.map((aula, indice) => (
-            <button
+            <div
               key={aula.id}
-              type="button"
-              onClick={() => aoSelecionar(aula.id)}
               style={{ animationDelay: `${(indice + 1) * 60}ms` }}
-              className={`animate-cascata text-left transition-colors ${
-                selecionada === aula.id
-                  ? "text-brand-ocre dark:text-brand-amarelo"
-                  : selecionada
-                    ? "text-brand-tinta dark:text-white"
-                    : "text-brand-tinta dark:text-white hover:text-brand-ocre dark:hover:text-brand-amarelo"
-              }`}
+              className="animate-cascata w-full"
             >
-              <span className="block font-display font-semibold text-sm leading-snug">
-                {aula.disciplina.nome}
-              </span>
-              <span className="block text-xs text-gray-500 dark:text-brand-light/40">
-                {data(aula.abertaEm)}
-                {aula.fechadaEm ? "" : " · aberta"}
-              </span>
-            </button>
+              <div className="flex items-start gap-2">
+                {/* Only on a class that is missing reports, so it is a signal and not
+                furniture. A button inside a button is invalid, hence the wrapper. */}
+                {aula.pendentes > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => aoGerar(aula.id)}
+                    disabled={gerandoAula !== null}
+                    title="Faltam relatórios nesta aula"
+                    aria-label={`Gerar os relatórios que faltam em ${aula.disciplina.nome}`}
+                    className="mt-0.5 shrink-0 text-brand-ocre dark:text-brand-amarelo disabled:opacity-40 transition-opacity"
+                  >
+                    {/* animate-spin and not fa-spin: Font Awesome kills its own
+                    animations under prefers-reduced-motion, and the icon freezes. */}
+                    <i
+                      className={`fa-solid fa-rotate inline-block text-xs ${
+                        gerandoAula === aula.id ? "animate-spin" : ""
+                      }`}
+                    />
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => aoSelecionar(aula.id)}
+                  className={`text-left transition-colors ${
+                    selecionada === aula.id
+                      ? "text-brand-ocre dark:text-brand-amarelo"
+                      : selecionada
+                        ? "text-brand-tinta dark:text-white"
+                        : "text-brand-tinta dark:text-white hover:text-brand-ocre dark:hover:text-brand-amarelo"
+                  }`}
+                >
+                  <span className="block font-display font-semibold text-sm leading-snug">
+                    {aula.disciplina.nome}
+                  </span>
+                  <span className="block text-xs text-gray-500 dark:text-brand-light/40">
+                    {data(aula.abertaEm)}
+                    {aula.fechadaEm ? "" : " · aberta"}
+                  </span>
+                </button>
+              </div>
+
+              {(falhasPorAula[aula.id] ?? 0) >= LIMITE_TENTATIVAS && (
+                <p className="mt-1 text-xs leading-snug text-gray-500 dark:text-brand-light/40">
+                  Três tentativas sem sucesso. Relate em {CONTATO}.
+                </p>
+              )}
+            </div>
           ))}
         </div>
       </div>
 
-      <div className="flex-1 min-w-0 overflow-y-auto">
+      <div
+        className={`flex-1 min-w-0 overflow-y-auto ${
+          selecionada ? "" : "hidden lg:block"
+        }`}
+      >
+        {selecionada && (
+          <button
+            type="button"
+            onClick={aoVoltar}
+            className="lg:hidden mb-4 flex items-center gap-2 text-sm text-gray-500 dark:text-brand-light/50"
+          >
+            <i className="fa-solid fa-arrow-left" aria-hidden="true" />
+            Aulas
+          </button>
+        )}
+
         {carregandoRelatorios && (
           <div className="animate-pulse space-y-4" aria-label="Carregando relatórios">
             {[0, 1, 2].map((item) => (

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Alerta from "../components/Alerta";
+import BarraTopoMobile from "../components/BarraTopoMobile";
 import { ErroDeApi } from "../api/client";
 import { aplicarTema, lerTema } from "../tema";
 import TelaAula from "./telas/TelaAula";
@@ -38,6 +39,11 @@ function Painel({ token, aoSair }: Props) {
   const [selecionada, setSelecionada] = useState<string | null>(null);
   const [relatorios, setRelatorios] = useState<Relatorio[]>([]);
   const [carregandoRelatorios, setCarregandoRelatorios] = useState(false);
+
+  const [gerandoAula, setGerandoAula] = useState<string | null>(null);
+  /* Attempts live in memory on purpose: reloading gives her three fresh ones, and by
+  then the spike that caused the failure has usually passed. */
+  const [falhasPorAula, setFalhasPorAula] = useState<Record<string, number>>({});
 
   const [acao, setAcao] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -161,10 +167,39 @@ function Painel({ token, aoSair }: Props) {
       ]);
       setAulas(historico);
       setAviso(
-        `Aula encerrada. ${dados.gerados} relatório(s) gerado(s)` +
-          (dados.falhas > 0 ? `, ${dados.falhas} falha(s).` : "."),
+        dados.falhas > 0
+          ? `Aula encerrada. ${dados.gerados} de ${dados.gerados + dados.falhas} relatórios gerados. Os que faltam ficam disponíveis na aba Relatórios.`
+          : `Aula encerrada. ${dados.gerados} relatório(s) gerado(s).`,
       );
     });
+  };
+
+  /* The conversation stays in Redis until its report is saved, so this only works on
+  whoever is missing one and can be run again without duplicating anything. */
+  const gerarRelatorios = (aulaId: string) => {
+    setGerandoAula(aulaId);
+    void chamar("gerar", async () => {
+      const dados = await aulaService.gerarRelatorios(aulaId, token);
+      const historico = await aulaService.listarAulas(token);
+      setAulas(historico);
+      if (selecionada === aulaId) {
+        setRelatorios(await aulaService.buscarRelatorios(aulaId, token));
+      }
+      setFalhasPorAula((atual) => ({
+        ...atual,
+        [aulaId]: dados.falhas > 0 ? (atual[aulaId] ?? 0) + 1 : 0,
+      }));
+      setAviso(
+        dados.falhas > 0
+          ? `${dados.gerados} relatório(s) gerado(s). ${dados.falhas} ainda pendente(s).`
+          : `${dados.gerados} relatório(s) gerado(s).`,
+      );
+    }).finally(() => setGerandoAula(null));
+  };
+
+  const voltarParaAulas = () => {
+    setSelecionada(null);
+    setRelatorios([]);
   };
 
   const selecionarAula = (aulaId: string) => {
@@ -176,6 +211,13 @@ function Painel({ token, aoSair }: Props) {
     }).finally(() => setCarregandoRelatorios(false));
   };
 
+  const classeAbaMobile = (alvo: Aba) =>
+    `flex-1 flex flex-col items-center gap-1 py-2.5 text-xs transition-colors ${
+      aba === alvo
+        ? "text-brand-tinta dark:text-white font-semibold"
+        : "text-gray-500 dark:text-brand-light/50"
+    }`;
+
   const classeAba = (alvo: Aba) =>
     `w-full text-left rounded-xl px-3 py-2 text-sm transition-colors ${
       aba === alvo
@@ -184,8 +226,15 @@ function Painel({ token, aoSair }: Props) {
     }`;
 
   return (
-    <div className="bg-brand-claro text-brand-tinta dark:bg-brand-preto dark:text-brand-light font-sans h-screen flex overflow-hidden selection:bg-brand-acao selection:text-black">
-      <aside className="relative z-20 shrink-0 h-full w-52 flex flex-col border-r border-gray-200 dark:border-white/5 bg-white dark:bg-white/[0.02] p-4">
+    <div className="bg-brand-claro text-brand-tinta dark:bg-brand-preto dark:text-brand-light font-sans h-screen [height:100dvh] flex flex-col lg:flex-row overflow-hidden selection:bg-brand-acao selection:text-black">
+      <BarraTopoMobile
+        className="lg:hidden"
+        tema={tema}
+        aoTrocarTema={trocarTema}
+        aoSair={aoSair}
+      />
+
+      <aside className="relative z-20 shrink-0 h-full w-52 hidden lg:flex flex-col border-r border-gray-200 dark:border-white/5 bg-white dark:bg-white/[0.02] p-4">
         <div className="mb-8">
           <img
             src="/images/logo-braz.webp"
@@ -252,7 +301,7 @@ function Painel({ token, aoSair }: Props) {
             aoFinalizar={finalizar}
           />
         ) : (
-          <div className="flex-1 min-h-0 overflow-hidden p-8 lg:p-12">
+          <div className="flex-1 min-h-0 overflow-hidden p-4 sm:p-6 lg:p-12">
             <TelaRelatorios
               aulas={aulas}
               carregandoAulas={carregandoAulas}
@@ -260,17 +309,36 @@ function Painel({ token, aoSair }: Props) {
               relatorios={relatorios}
               carregandoRelatorios={carregandoRelatorios}
               aoSelecionar={selecionarAula}
+              aoVoltar={voltarParaAulas}
+              gerandoAula={gerandoAula}
+              falhasPorAula={falhasPorAula}
+              aoGerar={gerarRelatorios}
             />
           </div>
         )}
 
         {(erro || aviso) && (
-          <div className="absolute inset-x-0 bottom-0 z-20 px-8 lg:px-12 pb-6">
+          <div className="absolute inset-x-0 bottom-0 z-20 px-4 sm:px-6 lg:px-12 pb-4 lg:pb-6">
             {erro && <Alerta texto={erro} tipo="erro" />}
             {aviso && !erro && <Alerta texto={aviso} tipo="aviso" />}
           </div>
         )}
       </main>
+
+      <nav className="lg:hidden shrink-0 flex border-t border-gray-200 bg-white dark:border-white/5 dark:bg-white/[0.02]">
+        <button type="button" onClick={() => setAba("aula")} className={classeAbaMobile("aula")}>
+          <i className="fa-solid fa-chalkboard-user" aria-hidden="true" />
+          Aula
+        </button>
+        <button
+          type="button"
+          onClick={() => setAba("relatorios")}
+          className={classeAbaMobile("relatorios")}
+        >
+          <i className="fa-solid fa-file-lines" aria-hidden="true" />
+          Relatórios
+        </button>
+      </nav>
     </div>
   );
 }

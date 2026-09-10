@@ -1,23 +1,17 @@
-import { useState } from "react";
-import { aplicarTema, lerTema } from "../../tema";
+import type { Tema } from "../../tema";
 
 type Props = {
+  tema: Tema;
+  aoTrocarTema: () => void;
   aoSair: () => void;
 };
 
 /* Fixed at this width: the bar carries only the mark, the theme and the exit, and
-nothing in it is worth the space an open panel would take from the conversation. */
-function BarraLateral({ aoSair }: Props) {
-  const [tema, setTema] = useState(lerTema);
-
-  const trocarTema = () => {
-    const novo = tema === "escuro" ? "claro" : "escuro";
-    aplicarTema(novo);
-    setTema(novo);
-  };
-
+nothing in it is worth the space an open panel would take from the conversation. Below
+sm it gives way to the top bar: 64px of chrome on a phone is a column of conversation. */
+function BarraLateral({ tema, aoTrocarTema, aoSair }: Props) {
   return (
-    <aside className="relative z-20 shrink-0 h-full w-16 flex flex-col border-r border-gray-200 bg-white dark:border-white/5 dark:bg-white/[0.02]">
+    <aside className="relative z-20 shrink-0 h-full w-16 hidden sm:flex flex-col border-r border-gray-200 bg-white dark:border-white/5 dark:bg-white/[0.02]">
       <div className="flex items-center justify-center p-4">
         <img
           src="/images/icone-escuro-braz.webp"
@@ -33,7 +27,7 @@ function BarraLateral({ aoSair }: Props) {
 
       <div className="mt-auto p-4 space-y-1">
         <button
-          onClick={trocarTema}
+          onClick={aoTrocarTema}
           className="w-full flex items-center justify-center rounded-xl px-3 py-2.5 text-gray-500 hover:text-brand-tinta hover:bg-gray-100 dark:text-gray-400 dark:hover:text-brand-acao dark:hover:bg-white/[0.04] transition-colors"
           aria-label={tema === "escuro" ? "Usar tema claro" : "Usar tema escuro"}
         >
