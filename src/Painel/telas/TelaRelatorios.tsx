@@ -49,6 +49,12 @@ function TelaRelatorios({
           selecionada ? "hidden lg:block" : ""
         }`}
       >
+        {!carregandoAulas && !selecionada && (
+          <p className="mb-4 text-sm text-gray-400 dark:text-brand-light/30">
+            Escolha uma aula para ver os relatórios.
+          </p>
+        )}
+
         <p className="text-[0.65rem] uppercase tracking-widest text-gray-500 dark:text-brand-light/40 mb-3">
           Aulas
         </p>
@@ -156,12 +162,6 @@ function TelaRelatorios({
               </div>
             ))}
           </div>
-        )}
-
-        {!carregandoAulas && !selecionada && (
-          <p className="text-sm text-gray-400 dark:text-brand-light/30">
-            Escolha uma aula para ver os relatórios.
-          </p>
         )}
 
         {selecionada && !carregandoRelatorios && relatorios.length === 0 && (
