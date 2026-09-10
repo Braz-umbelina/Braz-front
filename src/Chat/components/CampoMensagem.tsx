@@ -97,7 +97,7 @@ function CampoMensagem({ valor, enviando, bloqueado, aviso, pausada, placeholder
         </p>
       </form>
     </div>
-  )
+  ) 
 }
 
 export default CampoMensagem
