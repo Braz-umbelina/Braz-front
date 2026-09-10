@@ -2,7 +2,11 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
+    <!-- The mark has no outline, so one colour always vanishes against the browser
+    chrome. The first line is the fallback for whoever ignores the media attribute. -->
     <link rel="icon" type="image/png" href="/images/icone-braz-512.png" />
+    <link rel="icon" type="image/png" href="/images/icone-braz-512.png" media="(prefers-color-scheme: light)" />
+    <link rel="icon" type="image/png" href="/images/icone-branco-512.png" media="(prefers-color-scheme: dark)" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Braz - Assistente Educacional</title>
 

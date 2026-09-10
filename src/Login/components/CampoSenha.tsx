@@ -6,9 +6,18 @@ type Props = {
   valor: string
   aoMudar: (valor: string) => void
   placeholder: string
+  /* current-password on the login, new-password anywhere a password is being chosen.
+  Without the right one the browser offers the old password on the sign up screen. */
+  autoComplete?: 'current-password' | 'new-password'
 }
 
-function CampoSenha({ rotulo, valor, aoMudar, placeholder }: Props) {
+function CampoSenha({
+  rotulo,
+  valor,
+  aoMudar,
+  placeholder,
+  autoComplete = 'current-password',
+}: Props) {
   const [visivel, setVisivel] = useState(false)
 
   return (
@@ -21,6 +30,8 @@ function CampoSenha({ rotulo, valor, aoMudar, placeholder }: Props) {
           onChange={(e) => aoMudar(e.target.value)}
           className={`${CLASSE_INPUT} pr-11`}
           placeholder={placeholder}
+          name="senha"
+          autoComplete={autoComplete}
           minLength={6}
           required
         />

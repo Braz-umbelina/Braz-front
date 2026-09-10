@@ -7,6 +7,7 @@ import {
 } from "../../estilos";
 
 type Props = {
+  professora: string;
   chave: string;
   enviando: boolean;
   aoMudarChave: (valor: string) => void;
@@ -15,6 +16,7 @@ type Props = {
 };
 
 function TelaChave({
+  professora,
   chave,
   enviando,
   aoMudarChave,
@@ -38,6 +40,18 @@ function TelaChave({
       <p className={CLASSE_SUBTITULO}>Entregue pela coordenação da escola.</p>
 
       <form onSubmit={aoEnviar}>
+        {/* The browser needs someone to attach the key to. Without this field it keeps
+        a single credential for the whole site, and the next teacher to sign in here
+        would find a colleague's key already filled in. */}
+        <input
+          type="text"
+          name="professora"
+          value={professora}
+          autoComplete="username"
+          readOnly
+          hidden
+        />
+
         <div className="relative">
           <input
             type={visivel ? "text" : "password"}
@@ -45,6 +59,8 @@ function TelaChave({
             onChange={(e) => aoMudarChave(e.target.value)}
             className={`${CLASSE_INPUT} pr-12`}
             placeholder="••••••••"
+            name="chave"
+            autoComplete="current-password"
             autoFocus
             required
           />

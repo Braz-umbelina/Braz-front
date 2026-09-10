@@ -44,6 +44,7 @@ function TelaRedefinir({
           valor={senha}
           aoMudar={aoMudarSenha}
           placeholder="Mínimo 6 caracteres"
+          autoComplete="new-password"
         />
         <button
           type="submit"

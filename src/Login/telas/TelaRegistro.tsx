@@ -72,6 +72,7 @@ function TelaRegistro({
             valor={senha}
             aoMudar={aoMudarSenha}
             placeholder="Mínimo 6"
+            autoComplete="new-password"
           />
 
           <div>

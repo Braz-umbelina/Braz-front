@@ -10,7 +10,7 @@ function Rodape() {
       </div>
 
       <p className="text-center">
-        &copy; 2026 Geovani Eterno Rodrigues &middot; Colégio Estadual Umbelina
+        &copy; 2026 Geovani Rodrigues &middot; Colégio Estadual Umbelina
         Braz Gomides
       </p>
     </footer>

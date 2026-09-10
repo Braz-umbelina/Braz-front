@@ -112,7 +112,7 @@ function Professor({ aoAutenticar }: Props) {
                 {escolhida.nome}.
               </h2>
               <p className="text-sm text-brand-light/60 mt-4 max-w-xs">
-                O Braz auxilia os alunos. Você acompanha o caminho.
+                O Braz auxilia os alunos. Você acompanha o resultado.
               </p>
             </>
           ) : (
@@ -123,7 +123,7 @@ function Professor({ aoAutenticar }: Props) {
                 professora.
               </h2>
               <p className="text-sm text-brand-light/60 mt-4 max-w-xs">
-                Escolha seu nome para abrir suas disciplinas.
+                Escolha seu nome para acessar seu painel.
               </p>
             </>
           )}
@@ -145,6 +145,7 @@ function Professor({ aoAutenticar }: Props) {
         >
           {escolhida ? (
             <TelaChave
+              professora={escolhida.nome}
               chave={chave}
               enviando={enviando}
               aoMudarChave={setChave}

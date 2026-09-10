@@ -16,7 +16,8 @@ function CampoEmail({ rotulo, valor, aoMudar }: Props) {
         onChange={(e) => aoMudar(e.target.value)}
         className={CLASSE_INPUT}
         placeholder="aluno@escola.com"
-        autoComplete="email"
+        name="email"
+        autoComplete="username"
         required
       />
     </div>
