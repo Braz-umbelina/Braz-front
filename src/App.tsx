@@ -2,6 +2,8 @@ import { useCallback, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Chat from "./Chat/Chat";
 import Login from "./Login/Login";
+import Privacidade from "./Legal/Privacidade";
+import Termos from "./Legal/Termos";
 import Painel from "./Painel/Painel";
 import Professor from "./Professor/Professor";
 import { lerSessao, useExpiracaoDaSessao } from "./sessao";
@@ -69,6 +71,8 @@ function App() {
       <Routes>
         <Route path="/" element={<AreaAluno />} />
         <Route path="/professor" element={<AreaProfessor />} />
+        <Route path="/termos" element={<Termos />} />
+        <Route path="/privacidade" element={<Privacidade />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
