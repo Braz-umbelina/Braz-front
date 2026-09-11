@@ -286,11 +286,17 @@ function Chat({ token, aoSair }: Props) {
               {enviando && <Digitando />}
             </>
           )}
+          {/* The error lands where Braz's answer would be, so it keeps his alignment.
+          Red on the border instead of a filled box: a block of colour would be the
+          only one on a screen made of bubbles and plain text. */}
           {erro && (
-            <div role="alert" className="w-full flex justify-center">
-              <div className="bg-red-50 border border-red-200 text-red-700 dark:bg-red-950/60 dark:border-red-800 dark:text-red-200 text-sm rounded-xl px-4 py-2 text-center">
+            <div
+              role="alert"
+              className="max-w-3xl w-full animate-fade-in border-l-2 border-red-400 dark:border-red-800 pl-4"
+            >
+              <p className="text-red-700 dark:text-red-400 leading-relaxed">
                 {erro}
-              </div>
+              </p>
             </div>
           )}
         </main>

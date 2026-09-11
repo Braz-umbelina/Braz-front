@@ -133,7 +133,7 @@ function TelaAula({
           disabled={agindo}
           className={CLASSE_BOTAO_PAINEL}
         >
-          {acao === "finalizar" ? "Finalizando..." : "Finalizar aula"}
+          {acao === "finalizar" ? "Gerando relatórios..." : "Finalizar aula"}
         </button>
       </div>
 

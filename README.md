@@ -151,4 +151,4 @@ The output goes to `dist/`. After publishing, add the address to the API's `CLIE
 
 ## 📄 License
 
-**MIT © Geovani Eterno Rodrigues**
+**[MIT](./LICENSE) © Geovani Eterno Rodrigues**

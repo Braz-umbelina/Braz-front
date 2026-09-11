@@ -4,7 +4,7 @@ function Privacidade() {
   return (
     <PaginaLegal
       titulo="Política de Privacidade"
-      atualizadoEm="10 de setembro de 2026"
+      atualizadoEm="11 de setembro de 2026"
     >
       <Secao titulo="Quem é responsável">
         <p>
@@ -95,15 +95,17 @@ function Privacidade() {
       <Secao titulo="Quem mais tem acesso">
         <p>
           Para responder você, a sua mensagem é enviada para a inteligência
-          artificial Gemini, do Google. O projeto usa o plano pago desse
-          serviço, cujos termos preveem que o conteúdo enviado não é usado para
-          melhorar os produtos e os modelos do Google.
+          artificial DeepSeek. Esse serviço processa e guarda os dados fora do
+          Brasil, na China, e pelas regras dele o conteúdo enviado pode ser
+          usado para melhorar os modelos, a não ser que o desenvolvedor peça o
+          contrário. Esse pedido foi feito em 11 de setembro de 2026 e ainda
+          está aguardando confirmação do DeepSeek.
         </p>
         <p>
-          O Google pode manter registros dessas mensagens por um período, para
-          segurança e para impedir uso abusivo do serviço. Isso segue as regras
-          dele, não as nossas, e é o motivo de esta página falar apenas pelo que
-          o Braz guarda.
+          O DeepSeek pode manter registros dessas mensagens por um período,
+          para segurança e para impedir uso abusivo do serviço. Isso segue as
+          regras dele, não as nossas, e é o motivo de esta página falar apenas
+          pelo que o Braz guarda.
         </p>
         <p>
           Além disso, o sistema funciona sobre serviços de terceiros que

@@ -151,4 +151,4 @@ A saída vai para `dist/`. Depois de publicar, acrescente o endereço ao `CLIENT
 
 ## 📄 Licença
 
-**MIT © Geovani Eterno Rodrigues**
+**[MIT](./LICENSE) © Geovani Eterno Rodrigues**
