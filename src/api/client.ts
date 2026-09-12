@@ -7,11 +7,18 @@ token (401) apart from any other failure, and only the status says that. */
 export class ErroDeApi extends Error {
   public status: number;
   public aguardeSegundos?: number;
+  public codigo?: string;
 
-  constructor(mensagem: string, status: number, aguardeSegundos?: number) {
+  constructor(
+    mensagem: string,
+    status: number,
+    aguardeSegundos?: number,
+    codigo?: string,
+  ) {
     super(mensagem);
     this.status = status;
     this.aguardeSegundos = aguardeSegundos;
+    this.codigo = codigo;
   }
 }
 
@@ -53,7 +60,11 @@ export const requisitar = async <T>(
     const reset = response.headers.get("RateLimit-Reset");
     const espera = reset ? Number(reset) : undefined;
 
-    throw new ErroDeApi(mensagem, response.status, espera);
+    /* Some errors carry a code beside the message, for when the screen has to act on the
+    reason instead of only showing the text. */
+    const codigo = typeof dados?.codigo === "string" ? dados.codigo : undefined;
+
+    throw new ErroDeApi(mensagem, response.status, espera, codigo);
   }
 
   return dados as T;

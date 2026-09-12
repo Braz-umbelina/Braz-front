@@ -55,6 +55,30 @@ function Login({ aoAutenticar }: Props) {
     setSenha("");
   };
 
+  /* Someone who signed up and never confirmed gets the password right and is refused
+  anyway. Shown as an error it leaves the student on the login screen with no way out, so
+  they go straight to the code screen instead. That screen never asks for a code on its
+  own, on sign up the registration route is what sends it, so the send happens here. */
+  const irParaVerificacao = async () => {
+    trocarTela("verificar");
+    try {
+      const dados = await alunoService.reenviarCodigo(email);
+      setAviso(dados.message);
+      setEsperaReenvio(60);
+    } catch (error) {
+      /* A code sent less than a minute ago lands here. It is not a failure: there is a
+      valid code in the inbox already, and the student only needs to be told so. */
+      if (error instanceof ErroDeApi && error.aguardeSegundos) {
+        setEsperaReenvio(error.aguardeSegundos);
+        setAviso(
+          "Já enviamos um código há pouco. Confira sua caixa de entrada e o spam.",
+        );
+        return;
+      }
+      setErro(error instanceof Error ? error.message : "Erro inesperado");
+    }
+  };
+
   /* Wraps every submit so the loading state and the error message are handled in one
   place, instead of repeating try/catch on each screen. */
   const enviar = async (acao: () => Promise<void>) => {
@@ -64,6 +88,10 @@ function Login({ aoAutenticar }: Props) {
     try {
       await acao();
     } catch (error) {
+      if (error instanceof ErroDeApi && error.codigo === "EMAIL_NAO_VERIFICADO") {
+        await irParaVerificacao();
+        return;
+      }
       if (error instanceof ErroDeApi && error.aguardeSegundos) {
         setEsperaReenvio(error.aguardeSegundos);
       }
