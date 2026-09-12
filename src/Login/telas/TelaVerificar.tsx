@@ -11,6 +11,7 @@ type Props = {
   email: string;
   digitos: string[];
   enviando: boolean;
+  reenviando: boolean;
   aoMudarDigitos: (digitos: string[]) => void;
   aoEnviar: (e: FormEvent) => void;
   aoReenviar: () => void;
@@ -22,6 +23,7 @@ function TelaVerificar({
   email,
   digitos,
   enviando,
+  reenviando,
   aoMudarDigitos,
   aoEnviar,
   aoReenviar,
@@ -44,7 +46,7 @@ function TelaVerificar({
           disabled={enviando || !completo}
           className={`${CLASSE_BOTAO} !mt-7`}
         >
-          {enviando ? "Confirmando..." : "Confirmar código"}
+          {enviando && !reenviando ? "Confirmando..." : "Confirmar código"}
         </button>
       </form>
 
@@ -60,7 +62,7 @@ function TelaVerificar({
             disabled={enviando}
             className={CLASSE_LINK}
           >
-            Reenviar
+            {reenviando ? "Enviando..." : "Reenviar"}
           </button>
         )}
         <br />

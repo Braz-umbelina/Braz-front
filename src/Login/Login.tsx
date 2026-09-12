@@ -31,6 +31,7 @@ function Login({ aoAutenticar }: Props) {
   const [codigoTurma, setCodigoTurma] = useState("");
   const [digitos, setDigitos] = useState(DIGITOS_VAZIOS);
   const [enviando, setEnviando] = useState(false);
+  const [reenviando, setReenviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
   const [esperaReenvio, setEsperaReenvio] = useState(0);
@@ -132,11 +133,12 @@ function Login({ aoAutenticar }: Props) {
   };
 
   const reenviar = () => {
+    setReenviando(true);
     void enviar(async () => {
       const dados = await alunoService.reenviarCodigo(email);
       setAviso(dados.message);
       setEsperaReenvio(60);
-    });
+    }).finally(() => setReenviando(false));
   };
 
   const pedirCodigoDeSenha = (e: FormEvent) => {
@@ -147,6 +149,16 @@ function Login({ aoAutenticar }: Props) {
       setAviso(dados.message);
       setEsperaReenvio(60);
     });
+  };
+
+  const reenviarCodigoDeSenha = () => {
+    setReenviando(true);
+    void enviar(async () => {
+      const dados = await alunoService.pedirCodigoDeSenha(email);
+      setDigitos(DIGITOS_VAZIOS);
+      setAviso(dados.message);
+      setEsperaReenvio(60);
+    }).finally(() => setReenviando(false));
   };
 
   const redefinirSenha = (e: FormEvent) => {
@@ -231,6 +243,7 @@ function Login({ aoAutenticar }: Props) {
               email={email}
               digitos={digitos}
               enviando={enviando}
+              reenviando={reenviando}
               aoMudarDigitos={setDigitos}
               aoEnviar={confirmarCodigo}
               aoReenviar={reenviar}
@@ -255,9 +268,12 @@ function Login({ aoAutenticar }: Props) {
               digitos={digitos}
               senha={senha}
               enviando={enviando}
+              reenviando={reenviando}
               aoMudarDigitos={setDigitos}
               aoMudarSenha={setSenha}
               aoEnviar={redefinirSenha}
+              aoReenviar={reenviarCodigoDeSenha}
+              esperaReenvio={esperaReenvio}
               aoVoltar={() => trocarTela("esqueci")}
             />
           )}
