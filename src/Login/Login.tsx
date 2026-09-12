@@ -197,7 +197,7 @@ function Login({ aoAutenticar }: Props) {
               aoFazerLogin={() => trocarTela("login")}
             />
           )}
-
+ 
           {tela === "verificar" && (
             <TelaVerificar
               email={email}
