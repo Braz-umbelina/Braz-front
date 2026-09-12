@@ -51,6 +51,12 @@ body {
   margin: 0;
 }
 
+/* iOS ignores user-scalable=no on the viewport for double-tap zoom, so this is
+the part that actually blocks it there; Android gets it from the viewport meta. */
+html {
+  touch-action: manipulation;
+}
+
 #root {
   min-height: 100svh;
 }
