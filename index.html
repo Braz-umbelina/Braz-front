@@ -14,9 +14,9 @@
     próprios em vez do navegador comum. -->
     <link rel="manifest" href="/favicon/site.webmanifest" />
     <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" />
-    <meta name="theme-color" content="#12112c" />
+    <meta name="theme-color" content="#0A0F1C" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Braz" />
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -61,9 +61,11 @@
     </script>
     <script>
       // runs before react so the screen never flashes in the wrong theme
-      if (localStorage.getItem('braz:tema') !== 'claro') {
-        document.documentElement.classList.add('dark')
-      }
+      var escuro = localStorage.getItem('braz:tema') !== 'claro'
+      document.documentElement.classList.toggle('dark', escuro)
+      document
+        .querySelector('meta[name="theme-color"]')
+        .setAttribute('content', escuro ? '#0A0F1C' : '#EEF2F6')
     </script>
   </head>
   <body>

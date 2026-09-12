@@ -17,7 +17,7 @@ widths. */
 function BarraTopoMobile({ tema, aoTrocarTema, aoSair, className = "" }: Props) {
   return (
     <header
-      className={`shrink-0 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-1 dark:border-white/5 dark:bg-white/[0.02] ${className}`}
+      className={`shrink-0 flex items-center justify-between border-b border-gray-200 px-4 py-1 dark:border-white/5 ${className}`}
     >
       <img
         src="/images/logo-braz.webp"

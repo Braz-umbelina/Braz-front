@@ -61,7 +61,6 @@ function TelaChave({
             placeholder="••••••••"
             name="chave"
             autoComplete="current-password"
-            autoFocus
             required
           />
           <button

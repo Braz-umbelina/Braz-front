@@ -325,7 +325,7 @@ function Painel({ token, aoSair }: Props) {
         )}
       </main>
 
-      <nav className="lg:hidden shrink-0 flex border-t border-gray-200 bg-white dark:border-white/5 dark:bg-white/[0.02]">
+      <nav className="lg:hidden shrink-0 flex border-t border-gray-200 dark:border-white/5">
         <button type="button" onClick={() => setAba("aula")} className={classeAbaMobile("aula")}>
           <i className="fa-solid fa-chalkboard-user" aria-hidden="true" />
           Aula
