@@ -59,7 +59,9 @@ function Chat({ token, aoSair }: Props) {
     let inicializado = false;
     let anterior: Aula | null = null;
     let repetir: ReturnType<typeof setTimeout> | undefined;
-    const eventos = new EventSource(import.meta.env.VITE_API_URL + "/aula/eventos");
+    let reconectar: ReturnType<typeof setTimeout> | undefined;
+    let tentativas = 0;
+    let eventos: EventSource | undefined;
 
     const sincronizar = async () => {
       if (executando || !ativo || !conectado) return;
@@ -117,7 +119,15 @@ function Chat({ token, aoSair }: Props) {
           return;
         }
         setAvisoConexao("Não foi possível atualizar o chat. Tentando novamente...");
-        repetir = setTimeout(() => void sincronizar(), 5000);
+        let espera = 5000 + Math.random() * 2000;
+        if (
+          error instanceof ErroDeApi &&
+          error.status === 429 &&
+          error.aguardeSegundos
+        ) {
+          espera = error.aguardeSegundos * 1000 + Math.random() * 3000;
+        }
+        repetir = setTimeout(() => void sincronizar(), espera);
       } finally {
         executando = false;
         //Fetch again if another event arrived during the request
@@ -141,22 +151,39 @@ function Chat({ token, aoSair }: Props) {
       setAvisoConexao(null);
       void sincronizar();
     };
-    eventos.addEventListener("aula-atualizada", atualizar);
-    void sincronizar();
-    eventos.onerror = () => {
-      conectado = false;
-      versao++;
-      clearTimeout(repetir);
-      podeEnviarRef.current = false;
-      setSincronizado(false);
-      setAvisoConexao("Conexão interrompida. Reconectando ao chat...");
+    const conectar = () => {
+      eventos = new EventSource(
+        import.meta.env.VITE_API_URL + "/aula/eventos",
+      );
+      eventos.addEventListener("aula-atualizada", atualizar);
+      eventos.onopen = () => {
+        tentativas = 0;
+      };
+      eventos.onerror = () => {
+        conectado = false;
+        versao++;
+        clearTimeout(repetir);
+        podeEnviarRef.current = false;
+        setSincronizado(false);
+        setAvisoConexao("Conexão interrompida. Reconectando ao chat...");
+        if (!ativo || eventos?.readyState !== EventSource.CLOSED) return;
+        const espera =
+          Math.min(3000 * 2 ** tentativas, 30000) + Math.random() * 2000;
+        tentativas++;
+        clearTimeout(reconectar);
+        reconectar = setTimeout(conectar, espera);
+      };
     };
+
+    conectar();
+    void sincronizar();
     return () => {
       ativo = false;
       podeEnviarRef.current = false;
       invalidarConversa();
       clearTimeout(repetir);
-      eventos.close();
+      clearTimeout(reconectar);
+      eventos?.close();
     };
   }, [token, aoSair]);
 
