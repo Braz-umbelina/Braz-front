@@ -1,3 +1,29 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Nunito", sans-serif;
+  --font-display: "Poppins", sans-serif;
+
+  --color-brand-preto: #080c16;
+  --color-brand-fundo: #0a0f1c;
+  --color-brand-acao: #ffffff;
+  --color-brand-destaque: #4bc52f;
+  --color-brand-amarelo: #fabc17;
+  --color-brand-ocre: #8a6200;
+  --color-brand-elo: #2b4f8f;
+  --color-brand-eloClaro: #7fa8e8;
+  --color-brand-light: #ededed;
+  --color-brand-cinza: #8a8a8a;
+  --color-brand-superficie: #141414;
+  --color-brand-elevada: #1c1c1c;
+  --color-brand-claro: #eef2f6;
+  --color-brand-tinta: #16233a;
+  --color-brand-painel: #141f35;
+  --color-brand-mata: #123a2c;
+}
+
 ::-webkit-scrollbar {
   display: none !important;
 }
