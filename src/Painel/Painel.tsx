@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import Alerta from "../components/Alerta";
 import BarraTopoMobile from "../components/BarraTopoMobile";
 import { ErroDeApi } from "../api/client";
+import { lerProfessorDaSessao } from "../sessao";
 import { aplicarTema, lerTema } from "../tema";
 import TelaAula from "./telas/TelaAula";
+import TelaPerfil from "./telas/TelaPerfil";
 import TelaRelatorios from "./telas/TelaRelatorios";
 import * as aulaService from "./services/aulaService";
+import * as professorService from "../Professor/services/professorService";
 import type {
   AulaAberta,
   AulaAtual,
@@ -26,6 +29,11 @@ type Aba = "aula" | "relatorios";
 function Painel({ token, aoSair }: Props) {
   const [aba, setAba] = useState<Aba>("aula");
   const [tema, setTema] = useState(lerTema);
+  const professoraDaSessao = lerProfessorDaSessao(token);
+  const [nomeProfessora, setNomeProfessora] = useState(
+    professoraDaSessao?.nome ?? "",
+  );
+  const [editandoNome, setEditandoNome] = useState(false);
 
   const [disciplinas, setDisciplinas] = useState<Disciplina[]>([]);
   const [aulaAtual, setAulaAtual] = useState<AulaAtual | null>(null);
@@ -99,14 +107,19 @@ function Painel({ token, aoSair }: Props) {
   useEffect(() => {
     const carregar = async () => {
       try {
-        const [lista, atual, historico] = await Promise.all([
+        const [lista, atual, historico, professoras] = await Promise.all([
           aulaService.listarDisciplinas(token),
           aulaService.buscarAulaAtual(token),
           aulaService.listarAulas(token),
+          professorService.listarProfessoras().catch(() => []),
         ]);
         setDisciplinas(lista);
         setAulaAtual(atual);
         setAulas(historico);
+        const professoraAtual = professoras.find(
+          (professora) => professora.id === professoraDaSessao?.id,
+        );
+        if (professoraAtual) setNomeProfessora(professoraAtual.nome);
       } catch (error) {
         if (error instanceof ErroDeApi && error.status === 401) {
           aoSair();
@@ -211,6 +224,14 @@ function Painel({ token, aoSair }: Props) {
     }).finally(() => setCarregandoRelatorios(false));
   };
 
+  const atualizarNome = (novoNome: string) =>
+    void chamar("nome", async () => {
+      const professora = await professorService.atualizarNome(novoNome, token);
+      setNomeProfessora(professora.nome);
+      setEditandoNome(false);
+      setAviso("Nome atualizado com sucesso.");
+    });
+
   const classeAbaMobile = (alvo: Aba) =>
     `flex-1 flex flex-col items-center gap-1 py-2.5 text-xs transition-colors ${
       aba === alvo
@@ -232,6 +253,7 @@ function Painel({ token, aoSair }: Props) {
         tema={tema}
         aoTrocarTema={trocarTema}
         aoSair={aoSair}
+        aoEditarPerfil={() => setEditandoNome(true)}
       />
 
       <aside className="relative z-20 shrink-0 h-full w-52 hidden lg:flex flex-col border-r border-gray-200 dark:border-white/5 bg-white dark:bg-white/[0.02] p-4">
@@ -262,6 +284,15 @@ function Painel({ token, aoSair }: Props) {
         </nav>
 
         <div className="mt-auto flex flex-col gap-1">
+          <button
+            type="button"
+            onClick={() => setEditandoNome(true)}
+            className="w-full flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-gray-500 dark:text-brand-light/50 hover:text-brand-tinta dark:hover:text-white transition-colors"
+          >
+            <i className="fa-solid fa-user-pen" />
+            Alterar nome
+          </button>
+
           <button
             type="button"
             onClick={trocarTema}
@@ -317,7 +348,7 @@ function Painel({ token, aoSair }: Props) {
           </div>
         )}
 
-        {(erro || aviso) && (
+        {!editandoNome && (erro || aviso) && (
           <div className="absolute inset-x-0 bottom-0 z-20 px-4 sm:px-6 lg:px-12 pb-4 lg:pb-6">
             {erro && <Alerta texto={erro} tipo="erro" />}
             {aviso && !erro && <Alerta texto={aviso} tipo="aviso" />}
@@ -339,6 +370,19 @@ function Painel({ token, aoSair }: Props) {
           Relatórios
         </button>
       </nav>
+
+      {editandoNome && (
+        <TelaPerfil
+          nome={nomeProfessora}
+          salvando={acao === "nome"}
+          erro={erro}
+          aoSalvar={atualizarNome}
+          aoFechar={() => {
+            setEditandoNome(false);
+            setErro(null);
+          }}
+        />
+      )}
     </div>
   );
 }

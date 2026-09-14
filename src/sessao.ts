@@ -1,19 +1,37 @@
 import { useEffect } from "react";
 
+type ProfessorDaSessao = {
+  id: string;
+  nome: string;
+};
+
+const lerCorpoToken = (token: string): Record<string, unknown> | null => {
+  const corpo = token.split(".")[1];
+  if (!corpo) return null;
+  try {
+    return JSON.parse(
+      atob(corpo.replace(/-/g, "+").replace(/_/g, "/")),
+    ) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+};
+
 /* Reads the exp claim without checking the signature: this decides which screen to
 render, never whether the token is good. A forged exp buys a look at an empty chat and
 a 401 on the first request. */
 const lerExpiracao = (token: string): number | null => {
-  const corpo = token.split(".")[1];
-  if (!corpo) return null;
-  try {
-    const dados = JSON.parse(
-      atob(corpo.replace(/-/g, "+").replace(/_/g, "/")),
-    ) as { exp?: number };
-    return typeof dados.exp === "number" ? dados.exp * 1000 : null;
-  } catch {
-    return null;
-  }
+  const dados = lerCorpoToken(token);
+  return typeof dados?.exp === "number" ? dados.exp * 1000 : null;
+};
+
+export const lerProfessorDaSessao = (
+  token: string,
+): ProfessorDaSessao | null => {
+  const dados = lerCorpoToken(token);
+  return typeof dados?.id === "string" && typeof dados.nome === "string"
+    ? { id: dados.id, nome: dados.nome }
+    : null;
 };
 
 /* Runs while the first state is built, so an expired session opens on the login

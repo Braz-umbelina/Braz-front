@@ -4,6 +4,7 @@ type Props = {
   tema: Tema;
   aoTrocarTema: () => void;
   aoSair: () => void;
+  aoEditarPerfil?: () => void;
   className?: string;
 };
 
@@ -14,7 +15,13 @@ const CLASSE_ICONE =
 side bar, and giving each one its own top bar would make the two look like different
 apps. The breakpoint comes from outside because they hide the side bar at different
 widths. */
-function BarraTopoMobile({ tema, aoTrocarTema, aoSair, className = "" }: Props) {
+function BarraTopoMobile({
+  tema,
+  aoTrocarTema,
+  aoSair,
+  aoEditarPerfil,
+  className = "",
+}: Props) {
   return (
     <header
       className={`shrink-0 flex items-center justify-between border-b border-gray-200 px-4 py-1 dark:border-white/5 ${className}`}
@@ -31,6 +38,17 @@ function BarraTopoMobile({ tema, aoTrocarTema, aoSair, className = "" }: Props) 
       />
 
       <div className="flex items-center gap-1">
+        {aoEditarPerfil && (
+          <button
+            type="button"
+            onClick={aoEditarPerfil}
+            className={CLASSE_ICONE}
+            aria-label="Alterar nome"
+          >
+            <i className="fa-solid fa-user-pen" />
+          </button>
+        )}
+
         <button
           type="button"
           onClick={aoTrocarTema}

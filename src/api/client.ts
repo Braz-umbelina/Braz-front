@@ -25,7 +25,7 @@ export class ErroDeApi extends Error {
 //-------------- client
 
 type Opcoes = {
-  metodo?: "GET" | "POST";
+  metodo?: "GET" | "POST" | "PATCH";
   corpo?: unknown;
   token?: string;
 };
