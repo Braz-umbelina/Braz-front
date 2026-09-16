@@ -7,6 +7,7 @@ import Termos from "./Legal/Termos";
 import Painel from "./Painel/Painel";
 import Professor from "./Professor/Professor";
 import { lerSessao, useExpiracaoDaSessao } from "./sessao";
+import { useAlturaVisual } from "./useAlturaVisual";
 
 const CHAVE_TOKEN_ALUNO = "braz:token:aluno";
 const CHAVE_TOKEN_PROFESSOR = "braz:token:professor";
@@ -60,6 +61,8 @@ function AreaProfessor() {
 }
 
 function App() {
+  useAlturaVisual();
+
   return (
     <BrowserRouter>
       <Routes>

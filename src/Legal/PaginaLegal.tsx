@@ -8,7 +8,7 @@ type Props = {
 
 function PaginaLegal({ titulo, atualizadoEm, children }: Props) {
   return (
-    <div className="bg-brand-claro text-brand-tinta dark:bg-brand-fundo dark:text-brand-light font-sans min-h-screen px-5 py-10 sm:px-8 sm:py-14 selection:bg-brand-acao selection:text-black">
+    <div className="bg-brand-claro text-brand-tinta dark:bg-brand-fundo dark:text-brand-light font-sans min-h-full px-5 py-10 sm:px-8 sm:py-14 selection:bg-brand-acao selection:text-black">
       <div className="mx-auto w-full max-w-2xl">
         <Link
           to="/"

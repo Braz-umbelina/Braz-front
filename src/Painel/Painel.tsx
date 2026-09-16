@@ -233,7 +233,7 @@ function Painel({ token, aoSair }: Props) {
     }`;
 
   return (
-    <div className="bg-brand-claro text-brand-tinta dark:bg-brand-fundo dark:text-brand-light font-sans h-screen [height:100dvh] flex flex-col lg:flex-row overflow-hidden selection:bg-brand-acao selection:text-black">
+    <div className="bg-brand-claro text-brand-tinta dark:bg-brand-fundo dark:text-brand-light font-sans h-full flex flex-col lg:flex-row overflow-hidden selection:bg-brand-acao selection:text-black">
       <BarraTopoMobile
         className="lg:hidden"
         tema={tema}

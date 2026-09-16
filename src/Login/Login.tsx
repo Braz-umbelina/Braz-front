@@ -159,7 +159,7 @@ function Login({ aoAutenticar }: Props) {
   };
 
   return (
-    <div className="bg-brand-claro dark:bg-brand-fundo text-brand-tinta dark:text-brand-light font-sans min-h-screen flex items-center justify-center p-4 pb-20 sm:p-8 sm:pb-20 lg:pb-8 selection:bg-brand-acao selection:text-black">
+    <div className="bg-brand-claro dark:bg-brand-fundo text-brand-tinta dark:text-brand-light font-sans min-h-full flex items-center justify-center p-4 pb-20 sm:p-8 sm:pb-20 lg:pb-8 selection:bg-brand-acao selection:text-black">
       <OndaBraz />
       <FundoOnda cor="bg-brand-painel" variante="aluno" />
       <Rodape />

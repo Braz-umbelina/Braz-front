@@ -209,7 +209,7 @@ function Chat({ token, aoSair }: Props) {
   };
 
   return (
-    <div className="bg-brand-claro text-brand-tinta dark:bg-brand-fundo dark:text-brand-light font-sans h-screen [height:100dvh] flex flex-col sm:flex-row relative overflow-hidden selection:bg-brand-acao selection:text-black">
+    <div className="bg-brand-claro text-brand-tinta dark:bg-brand-fundo dark:text-brand-light font-sans h-full flex flex-col sm:flex-row relative overflow-hidden selection:bg-brand-acao selection:text-black">
       <div className="pointer-events-none absolute -top-[28rem] -left-[28rem] w-[70rem] h-[70rem] rounded-full bg-white dark:bg-white/[0.06] blur-[180px]" />
 
       <BarraTopoMobile
