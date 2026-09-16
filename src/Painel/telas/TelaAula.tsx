@@ -96,8 +96,6 @@ function TelaAula({
     );
   }
 
-  /* The same block on both sides: on a phone it becomes a green card under the
-  list, so the buttons keep the colours and the weight they have on the fold. */
   const acoes = aulaAtual ? (
     <>
       <p className="text-[0.65rem] uppercase tracking-widest text-brand-light/40 mb-2">
@@ -156,8 +154,6 @@ function TelaAula({
         gerado um relatório individual por aluno participante.
       </p>
 
-      {/* Opening a class closes whatever class is open, whoever opened it, and
-      writes its reports. She has to see whose class that is before the click. */}
       {confirmando && aulaAberta ? (
         <div className="max-w-sm">
           <p className="text-sm text-brand-amarelo">
@@ -206,8 +202,6 @@ return (
   <div className="relative flex-1 min-w-0 flex overflow-hidden">
     <OndaProfessora />
 
-    {/* Same fold as her login screen: the panel carries the state of the class and
-    the buttons, and the left side is only the choice. */}
     <div
       className="hidden lg:block absolute inset-y-0 right-0 left-[47%] bg-brand-mata"
       style={{ clipPath: "url(#ondaProfessora)" }}

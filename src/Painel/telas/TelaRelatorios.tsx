@@ -41,8 +41,6 @@ function TelaRelatorios({
   aoGerar,
 }: Props) {
   return (
-    /* Two columns do not fit a phone, so below lg the same two panes become two steps:
-    the list fills the screen, and picking a class replaces it with its reports. */
     <div className="animate-fade-in flex flex-col lg:flex-row gap-8 h-full min-h-0">
       <div
         className={`w-full lg:w-52 shrink-0 overflow-y-auto ${
@@ -78,8 +76,6 @@ function TelaRelatorios({
               className="animate-cascata w-full"
             >
               <div className="flex items-start gap-2">
-                {/* Only on a class that is missing reports, so it is a signal and not
-                furniture. A button inside a button is invalid, hence the wrapper. */}
                 {aula.pendentes > 0 && (
                   <button
                     type="button"
@@ -89,8 +85,6 @@ function TelaRelatorios({
                     aria-label={`Gerar os relatórios que faltam em ${aula.disciplina.nome}`}
                     className="mt-0.5 shrink-0 text-brand-ocre dark:text-brand-amarelo disabled:opacity-40 transition-opacity"
                   >
-                    {/* animate-spin and not fa-spin: Font Awesome kills its own
-                    animations under prefers-reduced-motion, and the icon freezes. */}
                     <i
                       className={`fa-solid fa-rotate inline-block text-xs ${
                         gerandoAula === aula.id ? "animate-spin" : ""
@@ -159,8 +153,6 @@ function TelaRelatorios({
         )}
 
         {selecionada && !carregandoRelatorios && relatorios.length === 0 && (
-          /* A class with no reports is a class where nobody asked anything, or one
-          that is still open: the reports are only written when it is finished. */
           <p className="text-sm text-gray-400 dark:text-brand-light/30">
             Nenhum relatório nesta aula.
           </p>

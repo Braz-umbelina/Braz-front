@@ -3,8 +3,6 @@ type Props = {
   tipo: "erro" | "aviso";
 };
 
-/* A line with an icon instead of a filled box: the message stays readable for as long
-as the student needs it, without a card competing with the form above. */
 function Alerta({ texto, tipo }: Props) {
   const erro = tipo === "erro";
 

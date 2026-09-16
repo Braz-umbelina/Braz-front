@@ -7,11 +7,22 @@ type Props = {
   aviso: string | null
   pausada: boolean
   placeholder: string
+  rodape?: string
   aoMudar: (valor: string) => void
   aoEnviar: () => void
 }
 
-function CampoMensagem({ valor, enviando, bloqueado, aviso, pausada, placeholder, aoMudar, aoEnviar }: Props) {
+function CampoMensagem({
+  valor,
+  enviando,
+  bloqueado,
+  aviso,
+  pausada,
+  placeholder,
+  rodape = 'O Braz pode cometer erros. Confirme com a professora o que for importante.',
+  aoMudar,
+  aoEnviar,
+}: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const ajustarAltura = () => {
@@ -40,12 +51,11 @@ function CampoMensagem({ valor, enviando, bloqueado, aviso, pausada, placeholder
   const habilitado = valor.trim() && !enviando && !bloqueado
 
   return (
-    <div className="shrink-0 w-full bg-gradient-to-t from-brand-claro via-brand-claro dark:from-black dark:via-black to-transparent pt-6 pb-5 px-4">
+    <div className="shrink-0 w-full bg-gradient-to-t from-brand-claro via-brand-claro dark:from-brand-fundo dark:via-brand-fundo to-transparent pt-6 pb-5 px-4">
       <form
         onSubmit={submeter}
         className="max-w-3xl mx-auto relative flex flex-col gap-3"
       >
-        {/* Amber, not green: this says he cannot send, and green reads as a go-ahead. */}
         {aviso && (
           <div role="status" className={
             pausada
@@ -63,10 +73,11 @@ function CampoMensagem({ valor, enviando, bloqueado, aviso, pausada, placeholder
             </div>
           </div>
         )}
-        <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-300 dark:border-gray-700 focus-within:border-brand-painel transition-colors flex items-center p-1 pl-4 shadow-sm">
+        <div className="bg-white dark:bg-brand-preto rounded-2xl border border-gray-300 dark:border-white/10 focus-within:border-brand-painel dark:focus-within:border-brand-eloClaro transition-colors flex items-center p-1 pl-4 shadow-sm">
           <textarea
             ref={textareaRef}
             rows={1}
+            maxLength={4000}
             disabled={bloqueado}
             aria-label="Mensagem para o Braz"
             value={valor}
@@ -92,8 +103,7 @@ function CampoMensagem({ valor, enviando, bloqueado, aviso, pausada, placeholder
           </button>
         </div>
         <p className="text-center text-xs text-gray-500 dark:text-gray-600">
-          O Braz pode cometer erros. Confirme com a professora o que for
-          importante.
+          {rodape}
         </p>
       </form>
     </div>

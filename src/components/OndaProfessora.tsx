@@ -1,6 +1,3 @@
-/* Traced from the mock and normalised, so the clip follows the card at any size.
-It is a softer curve than the student one on purpose: the two areas share the
-layout but should not look like the same screen. */
 function OndaProfessora() {
   return (
     <svg width="0" height="0" className="absolute">

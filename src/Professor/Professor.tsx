@@ -12,7 +12,6 @@ type Props = {
   aoAutenticar: (token: string) => void;
 };
 
-//-------------- component
 
 function Professor({ aoAutenticar }: Props) {
   const [professoras, setProfessoras] = useState<Professora[]>([]);
@@ -78,8 +77,6 @@ function Professor({ aoAutenticar }: Props) {
       <Rodape />
 
       <div className="relative w-full max-w-5xl lg:h-[36rem] rounded-[2rem] bg-white dark:bg-brand-preto shadow-[0_30px_80px_-30px_rgba(15,35,60,0.35)] overflow-hidden flex">
-        {/* The green walks to the other side when she reaches the key screen, so the
-        step change is felt before the text is read. */}
         <div
           className={`hidden lg:block absolute inset-y-0 bg-brand-mata ${
             naChave ? "left-0 right-[52%]" : "right-0 left-[52%]"

@@ -17,11 +17,6 @@ function TelaProfessoras({ professoras, carregando, aoEscolher }: Props) {
       <h2 className={CLASSE_TITULO}>Quem está entrando?</h2>
       <p className={CLASSE_SUBTITULO}>Toque no seu nome para continuar.</p>
 
-      {/* No card around each name: a first name is too short to fill one, and the
-      empty box was all the eye could see. The name carries the click by itself.
-      The height is reserved so the list arriving does not push the screen around,
-      and nothing is drawn while it loads: the request is short enough that a
-      loading line would only flash. */}
       <div className="flex flex-col items-start gap-1 min-h-[15rem]">
         {!carregando &&
           ordenadas.map((professora, indice) => (

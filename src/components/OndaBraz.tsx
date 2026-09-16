@@ -1,5 +1,3 @@
-/* The wave came out of Haikei as a 600x900 path and was normalised here, so the
-clip follows the card whatever its size instead of being tied to those pixels. */
 function OndaBraz() {
   return (
     <svg width="0" height="0" className="absolute">

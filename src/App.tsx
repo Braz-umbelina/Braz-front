@@ -11,10 +11,6 @@ import { lerSessao, useExpiracaoDaSessao } from "./sessao";
 const CHAVE_TOKEN_ALUNO = "braz:token:aluno";
 const CHAVE_TOKEN_PROFESSOR = "braz:token:professor";
 
-/* The token lives in localStorage so a refresh doesn't send the student back to the
-login screen. It expires in 8h on the backend, and the chat drops it on any 401. An
-expired one never reaches the first render, and one that expires with the tab open logs
-out on its own. */
 function AreaAluno() {
   const [token, setToken] = useState<string | null>(() =>
     lerSessao(CHAVE_TOKEN_ALUNO),
@@ -39,8 +35,6 @@ function AreaAluno() {
   return <Chat token={token} aoSair={sair} />;
 }
 
-/* Each role keeps its own key: the same browser is used by the teacher to open the
-class and by a student right after, and one login must not overwrite the other. */
 function AreaProfessor() {
   const [token, setToken] = useState<string | null>(() =>
     lerSessao(CHAVE_TOKEN_PROFESSOR),

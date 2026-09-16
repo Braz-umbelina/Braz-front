@@ -5,9 +5,6 @@ type Props = {
   aoMudar: (digitos: string[]) => void
 }
 
-/* Six separate boxes look better than one input, but they only behave well with
-manual focus control: typing moves forward, backspace moves back, and pasting the
-whole code from the email fills every box at once. */
 function CampoCodigo({ digitos, aoMudar }: Props) {
   const refs = useRef<(HTMLInputElement | null)[]>([])
 

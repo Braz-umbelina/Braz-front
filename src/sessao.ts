@@ -17,9 +17,6 @@ const lerCorpoToken = (token: string): Record<string, unknown> | null => {
   }
 };
 
-/* Reads the exp claim without checking the signature: this decides which screen to
-render, never whether the token is good. A forged exp buys a look at an empty chat and
-a 401 on the first request. */
 const lerExpiracao = (token: string): number | null => {
   const dados = lerCorpoToken(token);
   return typeof dados?.exp === "number" ? dados.exp * 1000 : null;
@@ -34,8 +31,6 @@ export const lerProfessorDaSessao = (
     : null;
 };
 
-/* Runs while the first state is built, so an expired session opens on the login
-instead of mounting the chat for a frame and leaving right after. */
 export const lerSessao = (chave: string): string | null => {
   const token = localStorage.getItem(chave);
   if (!token) return null;
@@ -48,8 +43,6 @@ export const lerSessao = (chave: string): string | null => {
   return token;
 };
 
-/* The tab stays open for hours: without this he would only find out the session
-ended when a message failed. */
 export const useExpiracaoDaSessao = (
   token: string | null,
   aoExpirar: () => void,

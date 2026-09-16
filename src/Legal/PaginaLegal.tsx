@@ -6,8 +6,6 @@ type Props = {
   children: React.ReactNode;
 };
 
-/* Both legal pages share this shell. They are read outside the login card, so they
-get the page background and a plain column instead of the two column fold. */
 function PaginaLegal({ titulo, atualizadoEm, children }: Props) {
   return (
     <div className="bg-brand-claro text-brand-tinta dark:bg-brand-fundo dark:text-brand-light font-sans min-h-screen px-5 py-10 sm:px-8 sm:py-14 selection:bg-brand-acao selection:text-black">

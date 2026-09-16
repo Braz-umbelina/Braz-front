@@ -6,9 +6,6 @@ type Props = {
   aoSair: () => void;
 };
 
-/* Fixed at this width: the bar carries only the mark, the theme and the exit, and
-nothing in it is worth the space an open panel would take from the conversation. Below
-sm it gives way to the top bar: 64px of chrome on a phone is a column of conversation. */
 function BarraLateral({ tema, aoTrocarTema, aoSair }: Props) {
   return (
     <aside className="relative z-20 shrink-0 h-full w-16 hidden sm:flex flex-col border-r border-gray-200 bg-white dark:border-white/5 dark:bg-white/[0.02]">

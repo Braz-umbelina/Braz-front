@@ -6,8 +6,6 @@ type Props = {
   valor: string
   aoMudar: (valor: string) => void
   placeholder: string
-  /* current-password on the login, new-password anywhere a password is being chosen.
-  Without the right one the browser offers the old password on the sign up screen. */
   autoComplete?: 'current-password' | 'new-password'
 }
 

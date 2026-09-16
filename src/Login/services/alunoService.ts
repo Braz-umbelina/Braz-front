@@ -1,6 +1,5 @@
 import { requisitar } from '../../api/client'
 
-//-------------- types
 
 type RespostaToken = {
   token: string
@@ -10,7 +9,6 @@ type RespostaMensagem = {
   message: string
 }
 
-//-------------- services
 
 export const login = (email: string, senha: string) =>
   requisitar<RespostaToken>('/aluno/login', {

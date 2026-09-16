@@ -11,10 +11,6 @@ type Props = {
 const CLASSE_ICONE =
   "flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 hover:text-brand-tinta hover:bg-gray-100 dark:text-gray-400 dark:hover:text-brand-acao dark:hover:bg-white/[0.04] transition-colors";
 
-/* The same bar for the student and for the teacher. On a phone both areas lose their
-side bar, and giving each one its own top bar would make the two look like different
-apps. The breakpoint comes from outside because they hide the side bar at different
-widths. */
 function BarraTopoMobile({
   tema,
   aoTrocarTema,

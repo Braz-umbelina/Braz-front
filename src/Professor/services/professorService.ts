@@ -1,6 +1,5 @@
 import { requisitar } from "../../api/client";
 
-//-------------- types
 
 export type Professora = {
   id: string;
@@ -17,7 +16,6 @@ type ProfessoraAtualizada = {
   nome: string;
 };
 
-//-------------- services
 
 export const listarProfessoras = () => requisitar<Professora[]>("/professor");
 

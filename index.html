@@ -2,8 +2,6 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <!-- The mark has no outline, so one colour always vanishes against the browser
-    chrome. The first line is the fallback for whoever ignores the media attribute. -->
     <link rel="icon" type="image/png" href="/images/icone-braz-512.png" />
     <link rel="icon" type="image/png" href="/images/icone-braz-512.png" media="(prefers-color-scheme: light)" />
     <link rel="icon" type="image/png" href="/images/icone-branco-512.png" media="(prefers-color-scheme: dark)" />
@@ -17,7 +15,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Braz" />
     <script>
-      // runs before react so the screen never flashes in the wrong theme
       var escuro = localStorage.getItem('braz:tema') !== 'claro'
       document.documentElement.classList.toggle('dark', escuro)
       document

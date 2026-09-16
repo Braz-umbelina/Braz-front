@@ -40,9 +40,6 @@ function TelaChave({
       <p className={CLASSE_SUBTITULO}>Entregue pela coordenação da escola.</p>
 
       <form onSubmit={aoEnviar}>
-        {/* The browser needs someone to attach the key to. Without this field it keeps
-        a single credential for the whole site, and the next teacher to sign in here
-        would find a colleague's key already filled in. */}
         <input
           type="text"
           name="professora"

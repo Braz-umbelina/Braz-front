@@ -7,6 +7,7 @@ import { aplicarTema, lerTema } from "../tema";
 import TelaAula from "./telas/TelaAula";
 import TelaPerfil from "./telas/TelaPerfil";
 import TelaRelatorios from "./telas/TelaRelatorios";
+import TelaChatProfessor from "./telas/TelaChatProfessor";
 import * as aulaService from "./services/aulaService";
 import * as professorService from "../Professor/services/professorService";
 import type {
@@ -22,9 +23,8 @@ type Props = {
   aoSair: () => void;
 };
 
-type Aba = "aula" | "relatorios";
+type Aba = "aula" | "relatorios" | "chat";
 
-//-------------- component
 
 function Painel({ token, aoSair }: Props) {
   const [aba, setAba] = useState<Aba>("aula");
@@ -49,16 +49,12 @@ function Painel({ token, aoSair }: Props) {
   const [carregandoRelatorios, setCarregandoRelatorios] = useState(false);
 
   const [gerandoAula, setGerandoAula] = useState<string | null>(null);
-  /* Attempts live in memory on purpose: reloading gives her three fresh ones, and by
-  then the spike that caused the failure has usually passed. */
   const [falhasPorAula, setFalhasPorAula] = useState<Record<string, number>>({});
 
   const [acao, setAcao] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
 
-  /* The notice clears itself: it reports something that already happened, so leaving
-  it on screen only makes her wonder whether it is about the last click or this one. */
   useEffect(() => {
     if (!erro && !aviso) return;
     const id = setTimeout(
@@ -77,8 +73,6 @@ function Painel({ token, aoSair }: Props) {
     setTema(novo);
   };
 
-  /* Wraps every call so an expired token drops the session in one place instead of
-  each button having to know what a 401 means. */
   const chamar = async (nome: string, executar: () => Promise<void>) => {
     setErro(null);
     setAviso(null);
@@ -96,14 +90,10 @@ function Painel({ token, aoSair }: Props) {
     }
   };
 
-  /* /aula/atual answers null when the class open right now belongs to another
-  teacher, so what comes back here is always hers. */
   const carregarEstado = async () => {
     setAulaAtual(await aulaService.buscarAulaAtual(token));
   };
 
-  /* The effects do not go through chamar: it sets state before the first await, and
-  that is a cascading render inside an effect. They carry their own try/catch. */
   useEffect(() => {
     const carregar = async () => {
       try {
@@ -135,8 +125,6 @@ function Painel({ token, aoSair }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  /* The open class is read again on the click: the one loaded when the panel opened
-  may be stale, and acting on it would close a colleague's class with no warning. */
   const iniciar = () =>
     void chamar("verificar", async () => {
       const aberta = await aulaService.buscarAulaAberta();
@@ -187,8 +175,6 @@ function Painel({ token, aoSair }: Props) {
     });
   };
 
-  /* The conversation stays in Redis until its report is saved, so this only works on
-  whoever is missing one and can be run again without duplicating anything. */
   const gerarRelatorios = (aulaId: string) => {
     setGerandoAula(aulaId);
     void chamar("gerar", async () => {
@@ -281,6 +267,13 @@ function Painel({ token, aoSair }: Props) {
           >
             Relatórios
           </button>
+          <button
+            type="button"
+            onClick={() => setAba("chat")}
+            className={classeAba("chat")}
+          >
+            Chat
+          </button>
         </nav>
 
         <div className="mt-auto flex flex-col gap-1">
@@ -331,7 +324,7 @@ function Painel({ token, aoSair }: Props) {
             aoAlternarPausa={alternarPausa}
             aoFinalizar={finalizar}
           />
-        ) : (
+        ) : aba === "relatorios" ? (
           <div className="flex-1 min-h-0 overflow-hidden p-4 sm:p-6 lg:p-12">
             <TelaRelatorios
               aulas={aulas}
@@ -346,6 +339,8 @@ function Painel({ token, aoSair }: Props) {
               aoGerar={gerarRelatorios}
             />
           </div>
+        ) : (
+          <TelaChatProfessor token={token} aoSair={aoSair} />
         )}
 
         {!editandoNome && (erro || aviso) && (
@@ -368,6 +363,14 @@ function Painel({ token, aoSair }: Props) {
         >
           <i className="fa-solid fa-file-lines" aria-hidden="true" />
           Relatórios
+        </button>
+        <button
+          type="button"
+          onClick={() => setAba("chat")}
+          className={classeAbaMobile("chat")}
+        >
+          <i className="fa-solid fa-comments" aria-hidden="true" />
+          Chat
         </button>
       </nav>
 

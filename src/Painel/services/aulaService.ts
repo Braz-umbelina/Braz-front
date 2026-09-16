@@ -1,6 +1,5 @@
 import { requisitar } from "../../api/client";
 
-//-------------- types
 
 export type Disciplina = {
   id: string;
@@ -14,8 +13,6 @@ export type AulaAtual = {
   abertaEm: string;
 };
 
-/* This one is the public route the chat also uses: it carries the teacher's name,
-which is what tells her whether the open class is hers or someone else's. */
 export type AulaAberta = {
   disciplina: string;
   pausada: boolean;
@@ -27,8 +24,6 @@ export type ResumoAula = {
   disciplina: { nome: string };
   abertaEm: string;
   fechadaEm: string | null;
-  /* How many students talked in this class and still have no report. The backend
-  writes it whenever it finishes a round, so zero means the class is complete. */
   pendentes: number;
 };
 
@@ -40,7 +35,6 @@ export type Relatorio = {
   observacoes: string;
 };
 
-//-------------- services
 
 export const listarDisciplinas = (token: string) =>
   requisitar<Disciplina[]>("/professor/disciplina", { token });

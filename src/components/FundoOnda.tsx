@@ -3,10 +3,6 @@ type Props = {
   variante: "aluno" | "professora";
 };
 
-/* Organic blobs instead of the card's wave: that path is a rectangle with one curved
-side, so loose on the screen it shows the three straight edges. These are closed
-shapes, curved all the way around, anchored off the corners so the middle stays clear.
-Each area gets its own pair, otherwise only the colour would tell them apart. */
 function FundoOnda({ cor, variante }: Props) {
   const formas =
     variante === "aluno"

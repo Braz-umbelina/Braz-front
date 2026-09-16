@@ -64,8 +64,6 @@ function TelaRegistro({
 
         <CampoEmail rotulo="E-mail" valor={email} aoMudar={aoMudarEmail} />
 
-        {/* Side by side because the card was running past the bottom of the screen with
-        four stacked fields. */}
         <div className="grid sm:grid-cols-2 gap-3.5">
           <CampoSenha
             rotulo="Senha"

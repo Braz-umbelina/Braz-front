@@ -21,7 +21,6 @@ type Props = {
 const DIGITOS_VAZIOS = Array<string>(6).fill("");
 
 
-//-------------- component
 
 function Login({ aoAutenticar }: Props) {
   const [tela, setTela] = useState<Tela>("login");
@@ -38,8 +37,6 @@ function Login({ aoAutenticar }: Props) {
 
   const codigo = digitos.join("");
 
-  /* Counts down the seconds the backend asked us to wait, so the student sees the button
-  come back to life instead of clicking it and getting the same error again. */
   useEffect(() => {
     if (esperaReenvio <= 0) return;
     const id = setTimeout(() => setEsperaReenvio((atual) => atual - 1), 1000);
@@ -51,15 +48,9 @@ function Login({ aoAutenticar }: Props) {
     setErro(null);
     setAviso(null);
     setDigitos(DIGITOS_VAZIOS);
-    /* The email carries over between screens because it is the same person typing, but
-    the password never does: what was typed to sign in must not show up on sign up. */
     setSenha("");
   };
 
-  /* Someone who signed up and never confirmed gets the password right and is refused
-  anyway. Shown as an error it leaves the student on the login screen with no way out, so
-  they go straight to the code screen instead. That screen never asks for a code on its
-  own, on sign up the registration route is what sends it, so the send happens here. */
   const irParaVerificacao = async () => {
     trocarTela("verificar");
     try {
@@ -67,8 +58,6 @@ function Login({ aoAutenticar }: Props) {
       setAviso(dados.message);
       setEsperaReenvio(60);
     } catch (error) {
-      /* A code sent less than a minute ago lands here. It is not a failure: there is a
-      valid code in the inbox already, and the student only needs to be told so. */
       if (error instanceof ErroDeApi && error.aguardeSegundos) {
         setEsperaReenvio(error.aguardeSegundos);
         setAviso(
@@ -80,8 +69,6 @@ function Login({ aoAutenticar }: Props) {
     }
   };
 
-  /* Wraps every submit so the loading state and the error message are handled in one
-  place, instead of repeating try/catch on each screen. */
   const enviar = async (acao: () => Promise<void>) => {
     setErro(null);
     setAviso(null);
@@ -178,8 +165,6 @@ function Login({ aoAutenticar }: Props) {
       <Rodape />
 
       <div className="relative w-full max-w-5xl lg:h-[36rem] rounded-[2rem] bg-white dark:bg-brand-preto shadow-[0_30px_80px_-30px_rgba(15,35,60,0.35)] overflow-hidden flex">
-        {/* The panel keeps this blue in both themes, the way the teacher side keeps its
-        green: the light version of it washed out against the white card. */}
         <div
           className="hidden lg:block absolute inset-y-0 right-0 left-[56%] bg-brand-painel"
           style={{ clipPath: "url(#ondaBraz)" }}
