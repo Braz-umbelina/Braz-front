@@ -32,27 +32,51 @@ export const requisitar = async <T>(
 ): Promise<T> => {
   const { metodo = "GET", corpo, token } = opcoes;
 
-  const response = await fetch(`${API_URL}${caminho}`, {
-    method: metodo,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: corpo ? JSON.stringify(corpo) : undefined,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_URL}${caminho}`, {
+      method: metodo,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: corpo ? JSON.stringify(corpo) : undefined,
+    });
+  } catch {
+    throw new ErroDeApi(
+      "Não foi possível conectar ao servidor. Tente novamente em instantes.",
+      0,
+    );
+  }
 
-  const dados = await response.json();
+  const texto = await response.text();
+  let dados: unknown = null;
+
+  if (texto) {
+    try {
+      dados = JSON.parse(texto);
+    } catch {
+      dados = null;
+    }
+  }
 
   if (!response.ok) {
+    const resposta =
+      typeof dados === "object" && dados !== null
+        ? (dados as Record<string, unknown>)
+        : null;
     const mensagem =
-      typeof dados?.error === "string"
-        ? dados.error
-        : "Não foi possível concluir a solicitação";
+      typeof resposta?.error === "string"
+        ? resposta.error
+        : response.status >= 500
+          ? "O servidor está indisponível no momento. Tente novamente em instantes."
+          : "Não foi possível concluir a solicitação.";
 
     const reset = response.headers.get("RateLimit-Reset");
     const espera = reset ? Number(reset) : undefined;
 
-    const codigo = typeof dados?.codigo === "string" ? dados.codigo : undefined;
+    const codigo =
+      typeof resposta?.codigo === "string" ? resposta.codigo : undefined;
 
     throw new ErroDeApi(mensagem, response.status, espera, codigo);
   }
