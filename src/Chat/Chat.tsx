@@ -221,7 +221,7 @@ function Chat({ token, aoSair }: Props) {
       <BarraLateral tema={tema} aoTrocarTema={trocarTema} aoSair={aoSair} />
 
       <div className="relative flex-1 flex flex-col min-w-0 lg:-ml-16">
-        <div className="absolute top-4 right-6 z-10 text-right hidden sm:block pointer-events-none">
+        <div className="absolute top-4 right-6 z-10 text-right hidden xl:block pointer-events-none">
           {aula && (
             <>
               <p className="text-[0.65rem] text-gray-500 dark:text-gray-400 uppercase tracking-widest">
